@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 学员案例库</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --bg-dark: #0F172A;
+            --bg-card: #1E293B;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --border-color: #334155;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --info-color: #3B82F6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* === 顶部导航 === */
+        .topbar {
+            height: 60px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .topbar-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .refresh-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .refresh-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* === 主容器 === */
+        .main-container {
+            margin-top: 60px;
+            padding: 20px;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* === KPI 卡片 === */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .kpi-trend {
+            font-size: 12px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .kpi-trend.up {
+            color: var(--success-color);
+        }
+
+        .kpi-trend.down {
+            color: var(--danger-color);
+        }
+
+        /* === 图表区域 === */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-more {
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .chart-body {
+            padding: 16px 20px;
+            height: 320px;
+        }
+
+        .chart-body.large {
+            height: 360px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .trend-chart {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .target-gauge {
+            height: 100px;
+            margin-top: 16px;
+        }
+
+        /* === 底部区域 === */
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* === 待审核列表 === */
+        .review-list {
+            padding: 0;
+        }
+
+        .review-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .review-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .review-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .review-title {
+            font-size: 14px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .review-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .review-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .review-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .review-btn.approve {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+            border: 1px solid transparent;
+        }
+
+        .review-btn.approve:hover {
+            background: rgba(16, 185, 129, 0.3);
+        }
+
+        .review-btn.reject {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger-color);
+            border: 1px solid transparent;
+        }
+
+        .review-btn.reject:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        /* === 告警列表 === */
+        .alert-list {
+            padding: 0;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 6px;
+        }
+
+        .alert-icon.error {
+            background: var(--danger-color);
+        }
+
+        .alert-icon.warning {
+            background: var(--warning-color);
+        }
+
+        .alert-info {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .alert-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .alert-action {
+            font-size: 12px;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        /* === 状态标签 === */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning-color);
+        }
+
+        .status-badge.published {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-badge.rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger-color);
+        }
+
+        /* === 快捷操作 === */
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .quick-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(79, 70, 229, 0.2);
+            color: var(--primary-color);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            background: rgba(79, 70, 229, 0.3);
+        }
+
+        /* === 页脚 === */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        /* === 响应式 === */
+        @media (max-width: 1400px) {
+            .charts-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .charts-row .chart-card:first-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .kpi-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+
+            .bottom-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-row {
+                grid-template-columns: 1fr;
+            }
+
+            .main-container {
+                padding: 12px;
+            }
+
+            .chart-body {
+                height: 240px;
+            }
+        }
+
+        /* === 加载动画 === */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="logo">学员案例库</div>
+            <div class="topbar-title">管理后台</div>
+        </div>
+        <div class="topbar-right">
+            <div class="refresh-info">
+                <span class="refresh-dot"></span>
+                <span>实时更新</span>
+                <span id="currentTime">2024-03-15 14:30:25</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="avatar" style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; font-weight: 600;">管</div>
+                <span style="font-size: 14px;">管理员</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- KPI 卡片 -->
+        <div class="kpi-row">
+            <div class="kpi-card">
+                <div class="kpi-label">总案例数</div>
+                <div class="kpi-value">1,234</div>
+                <div class="kpi-trend up">
+                    <span>↑</span>
+                    <span>+12.5%</span>
+                    <span style="color: var(--text-secondary);">较上月</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">本月新增</div>
+                <div class="kpi-value">156</div>
+                <div class="kpi-trend up">
+                    <span>↑</span>
+                    <span>+8.3%</span>
+                    <span style="color: var(--text-secondary);">较上月</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">待审核</div>
+                <div class="kpi-value" style="color: var(--warning-color);">23</div>
+                <div class="kpi-trend">
+                    <span style="color: var(--text-secondary);">需要处理</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">总下载量</div>
+                <div class="kpi-value">45.6K</div>
+                <div class="kpi-trend up">
+                    <span>↑</span>
+                    <span>+23.1%</span>
+                    <span style="color: var(--text-secondary);">较上月</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <div class="charts-row">
+            <!-- 左侧：分类状态分布 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <span>📊</span>
+                        <span>分类状态分布</span>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <div id="categoryChart" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- 中间：趋势分析 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <span>📈</span>
+                        <span>核心趋势分析</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <span class="status-badge published">近7天</span>
+                        <span class="status-badge pending" style="background: rgba(255,255,255,0.1); color: var(--text-secondary);">近30天</span>
+                    </div>
+                </div>
+                <div class="chart-body large">
+                    <div id="trendChart" class="trend-chart"></div>
+                    <div id="gaugeChart" class="target-gauge"></div>
+                </div>
+            </div>
+
+            <!-- 右侧：实时状态 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <span>⚡</span>
+                        <span>实时状态分布</span>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <div id="statusChart" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部区域 -->
+        <div class="bottom-row">
+            <!-- 待审核列表 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <span>📋</span>
+                        <span>待审核案例</span>
+                    </div>
+                    <span class="chart-more">查看全部 →</span>
+                </div>
+                <div class="review-list">
+                    <div class="review-item">
+                        <div class="review-avatar">张</div>
+                        <div class="review-info">
+                            <div class="review-title">AI写作助手 - 文章生成模板</div>
+                            <div class="review-meta">张三 · 2小时前提交</div>
+                        </div>
+                        <div class="review-actions">
+                            <button class="review-btn approve">通过</button>
+                            <button class="review-btn reject">驳回</button>
+                        </div>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-avatar" style="background: #10B981;">李</div>
+                        <div class="review-info">
+                            <div class="review-title">数据分析与可视化工具</div>
+                            <div class="review-meta">李四 · 5小时前提交</div>
+                        </div>
+                        <div class="review-actions">
+                            <button class="review-btn approve">通过</button>
+                            <button class="review-btn reject">驳回</button>
+                        </div>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-avatar" style="background: #F59E0B;">王</div>
+                        <div class="review-info">
+                            <div class="review-title">自动化办公文档生成器</div>
+                            <div class="review-meta">王五 · 昨天</div>
+                        </div>
+                        <div class="review-actions">
+                            <button class="review-btn approve">通过</button>
+                            <button class="review-btn reject">驳回</button>
+                        </div>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-avatar" style="background: #8B5CF6;">赵</div>
+                        <div class="review-info">
+                            <div class="review-title">代码审查辅助工具</div>
+                            <div class="review-meta">赵六 · 昨天</div>
+                        </div>
+                        <div class="review-actions">
+                            <button class="review-btn approve">通过</button>
+                            <button class="review-btn reject">驳回</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <button class="quick-btn">批量审核</button>
+                    <button class="quick-btn">分配任务</button>
+                    <button class="quick-btn">导出列表</button>
+                </div>
+            </div>
+
+            <!-- 实时告警 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <span>🚨</span>
+                        <span>实时告警</span>
+                    </div>
+                    <span class="chart-more">清空全部</span>
+                </div>
+                <div class="alert-list">
+                    <div class="alert-item">
+                        <div class="alert-icon error"></div>
+                        <div class="alert-info">
+                            <div class="alert-title" style="color: var(--danger-color);">安全检测异常</div>
+                            <div class="alert-desc" style="font-size: 13px; color: var(--text-secondary);">案例"自动化脚本"检测到可疑代码</div>
+                            <div class="alert-time">10分钟前</div>
+                        </div>
+                        <div class="alert-action">查看</div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-icon warning"></div>
+                        <div class="alert-info">
+                            <div class="alert-title" style="color: var(--warning-color);">审核超时提醒</div>
+                            <div class="alert-desc" style="font-size: 13px; color: var(--text-secondary);">3个案例超过72小时未审核</div>
+                            <div class="alert-time">1小时前</div>
+                        </div>
+                        <div class="alert-action">处理</div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-icon error"></div>
+                        <div class="alert-info">
+                            <div class="alert-title" style="color: var(--danger-color);">举报待处理</div>
+                            <div class="alert-desc" style="font-size: 13px; color: var(--text-secondary);">案例"营销文案生成"被举报侵权</div>
+                            <div class="alert-time">3小时前</div>
+                        </div>
+                        <div class="alert-action">处理</div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-icon warning"></div>
+                        <div class="alert-info">
+                            <div class="alert-title" style="color: var(--warning-color);">存储空间预警</div>
+                            <div class="alert-desc" style="font-size: 13px; color: var(--text-secondary);">当前存储使用率达85%</div>
+                            <div class="alert-time">5小时前</div>
+                        </div>
+                        <div class="alert-action">查看</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+        <p>数据最后更新：<span id="updateTime">2024-03-15 14:30:00</span> · 系统状态：<span style="color: var(--success-color);">正常运行</span></p>
+        <p style="margin-top: 8px;">© 2024 学员案例库 · 版本 1.2.0</p>
+    </div>
+
+    <!-- 加载动画 -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        // === 更新时间 ===
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', { hour12: false });
+            document.getElementById('currentTime').textContent = timeStr;
+            document.getElementById('updateTime').textContent = timeStr;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // === 分类状态分布图 ===
+        const categoryChart = echarts.init(document.getElementById('categoryChart'));
+        categoryChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                top: '10%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                axisLine: { lineStyle: { color: '#334155' } },
+                axisLabel: { color: '#94A3B8' },
+                splitLine: { lineStyle: { color: '#334155' } }
+            },
+            yAxis: {
+                type: 'category',
+                data: ['写作助手', '数据分析', '自动化', '开发工具', '效率提升'],
+                axisLine: { lineStyle: { color: '#334155' } },
+                axisLabel: { color: '#94A3B8' }
+            },
+            series: [{
+                name: '已发布',
+                type: 'bar',
+                stack: 'total',
+                data: [320, 280, 240, 180, 150],
+                itemStyle: { color: '#10B981' }
+            }, {
+                name: '待审核',
+                type: 'bar',
+                stack: 'total',
+                data: [8, 6, 4, 3, 2],
+                itemStyle: { color: '#F59E0B' }
+            }, {
+                name: '已驳回',
+                type: 'bar',
+                stack: 'total',
+                data: [12, 8, 6, 4, 3],
+                itemStyle: { color: '#EF4444' }
+            }],
+            legend: {
+                data: ['已发布', '待审核', '已驳回'],
+                textStyle: { color: '#94A3B8' },
+                top: 0
+            }
+        });
+
+        // === 趋势分析图 ===
+        const trendChart = echarts.init(document.getElementById('trendChart'));
+        const trendData = [45, 52, 48, 65, 58, 72, 68, 85, 78, 92, 88, 105, 98, 115, 108, 125, 118, 135, 128, 145, 138, 155, 148, 165, 158, 175, 168, 185, 178, 195];
+        const dates = [];
+        for (let i = 29; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            dates.push(d.getDate() + '日');
+        }
+
+        trendChart.setOption({
+            tooltip: {
+                trigger: 'axis'
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                top: '10%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: dates,
+                axisLine: { lineStyle: { color: '#334155' } },
+                axisLabel: { color: '#94A3B8', fontSize: 10 }
+            },
+            yAxis: {
+                type: 'value',
+                axisLine: { lineStyle: { color: '#334155' } },
+                axisLabel: { color: '#94A3B8' },
+                splitLine: { lineStyle: { color: '#334155' } }
+            },
+            series: [{
+                name: '新增案例',
+                type: 'line',
+                data: trendData,
+                smooth: true,
+                lineStyle: { color: '#4F46E5', width: 2 },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(79, 70, 229, 0.3)' },
+                        { offset: 1, color: 'rgba(79, 70, 229, 0)' }
+                    ])
+                },
+                markPoint: {
+                    data: [
+                        { name: '异常高点', value: 195, xAxis: 28, yAxis: 195, itemStyle: { color: '#EF4444' } }
+                    ]
+                }
+            }]
+        });
+
+        // === 目标达成仪表盘 ===
+        const gaugeChart = echarts.init(document.getElementById('gaugeChart'));
+        gaugeChart.setOption({
+            series: [{
+                type: 'gauge',
+                center: ['50%', '60%'],
+                radius: '80%',
+                startAngle: 180,
+                endAngle: 0,
+                min: 0,
+                max: 100,
+                splitNumber: 10,
+                axisLine: {
+                    lineStyle: {
+                        color: [[0.7, '#10B981'], [0.9, '#F59E0B'], [1, '#EF4444']],
+                        width: 8
+                    }
+                },
+                pointer: {
+                    itemStyle: { color: '#4F46E5' },
+                    width: 4,
+                    length: '60%'
+                },
+                axisTick: { show: false },
+                splitLine: { show: false },
+                axisLabel: { show: false },
+                detail: {
+                    valueAnimation: true,
+                    formatter: '{value}%',
+                    color: '#F1F5F9',
+                    fontSize: 20,
+                    offsetCenter: [0, '20%']
+                },
+                data: [{ value: 78 }]
+            }],
+            graphic: [{
+                type: 'text',
+                left: 'center',
+                top: '25%',
+                style: {
+                    text: '月度目标达成率',
+                    fill: '#94A3B8',
+                    fontSize: 12
+                }
+            }]
+        });
+
+        // === 实时状态分布图 ===
+        const statusChart = echarts.init(document.getElementById('statusChart'));
+        statusChart.setOption({
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                top: '10%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['草稿', '待审核', '已发布', '已下架'],
+                axisLine: { lineStyle: { color: '#334155' } },
+                axisLabel: { color: '#94A3B8' }
+            },
+            yAxis: {
+                type: 'value',
+                axisLine: { lineStyle: { color: '#334155' } },
+                axisLabel: { color: '#94A3B8' },
+                splitLine: { lineStyle: { color: '#334155' } }
+            },
+            series: [{
+                name: '案例数',
+                type: 'bar',
+                data: [
+                    { value: 45, itemStyle: { color: '#6B7280' } },
+                    { value: 23, itemStyle: { color: '#F59E0B' } },
+                    { value: 1156, itemStyle: { color: '#10B981' } },
+                    { value: 10, itemStyle: { color: '#EF4444' } }
+                ],
+                barWidth: '60%',
+                label: {
+                    show: true,
+                    position: 'top',
+                    color: '#F1F5F9'
+                }
+            }]
+        });
+
+        // === 窗口自适应 ===
+        window.addEventListener('resize', () => {
+            categoryChart.resize();
+            trendChart.resize();
+            gaugeChart.resize();
+            statusChart.resize();
+        });
+
+        // === 审核按钮交互 ===
+        document.querySelectorAll('.review-btn.approve').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const item = this.closest('.review-item');
+                item.style.opacity = '0.5';
+                item.style.pointerEvents = 'none';
+                this.textContent = '已通过';
+                setTimeout(() => item.remove(), 500);
+            });
+        });
+
+        document.querySelectorAll('.review-btn.reject').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const reason = prompt('请输入驳回原因：');
+                if (reason) {
+                    const item = this.closest('.review-item');
+                    item.style.opacity = '0.5';
+                    item.style.pointerEvents = 'none';
+                    this.textContent = '已驳回';
+                    setTimeout(() => item.remove(), 500);
+                }
+            });
+        });
+
+        // === 告警处理 ===
+        document.querySelectorAll('.alert-action').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const item = this.closest('.alert-item');
+                item.style.background = 'rgba(16, 185, 129, 0.1)';
+                this.textContent = '已处理';
+                this.style.color = '#10B981';
+            });
+        });
+
+        // === 模拟实时数据更新 ===
+        setInterval(() => {
+            // 更新目标达成率
+            const newValue = Math.round(75 + Math.random() * 10);
+            gaugeChart.setOption({
+                series: [{ data: [{ value: newValue }] }]
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

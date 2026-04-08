@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 学员案例库</title>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --secondary-color: #8B5CF6;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --text-light: #9CA3AF;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --bg-tertiary: #F3F4F6;
+            --border-color: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* === 导航栏 === */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .navbar-logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .navbar-nav a {
+            padding: 8px 16px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+
+        .navbar-nav a:hover,
+        .navbar-nav a.active {
+            color: var(--primary-color);
+            background: rgba(79, 70, 229, 0.08);
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-search {
+            position: relative;
+        }
+
+        .navbar-search input {
+            width: 240px;
+            padding: 8px 12px 8px 36px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            transition: all 0.2s;
+        }
+
+        .navbar-search input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--bg-primary);
+            width: 280px;
+        }
+
+        .navbar-search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .navbar-btn {
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .navbar-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .navbar-btn.primary:hover {
+            background: var(--primary-hover);
+        }
+
+        /* === Hero 区域 === */
+        .hero {
+            margin-top: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #8B5CF6 100%);
+            padding: 80px 24px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: bgMove 20s linear infinite;
+        }
+
+        @keyframes bgMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .hero-btn {
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .hero-btn.primary {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .hero-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-btn.secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* === 统计数据 === */
+        .stats-bar {
+            background: var(--bg-primary);
+            margin: -30px 24px 30px;
+            padding: 24px;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* === 主内容区 === */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px 40px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-more {
+            font-size: 14px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* === 精选案例 === */
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .case-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .case-card:hover {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-4px);
+        }
+
+        .case-cover {
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            position: relative;
+        }
+
+        .case-cover.featured::after {
+            content: '⭐ 精选';
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .case-body {
+            padding: 20px;
+        }
+
+        .case-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .case-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .case-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .case-tag {
+            padding: 4px 12px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .case-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .case-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .author-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .case-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* === 分类标签 === */
+        .categories-section {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 16px;
+        }
+
+        .category-card {
+            padding: 20px 16px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .category-card:hover {
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .category-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .category-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .category-count {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        /* === 活跃作者 === */
+        .authors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .author-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .author-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .author-card .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0 auto 12px;
+        }
+
+        .author-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .author-title {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .author-stats {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* === 页脚 === */
+        .footer {
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+            padding: 40px 24px;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-brand {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .footer-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .footer-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+
+        .footer-links a {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 24px;
+            margin-top: 24px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* === 响应式 === */
+        @media (max-width: 1024px) {
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-nav {
+                display: none;
+            }
+
+            .navbar-search {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .stats-bar {
+                grid-template-columns: 1fr;
+                margin: 0 16px 24px;
+            }
+
+            .featured-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="navbar-logo">学员案例库</a>
+            <div class="navbar-nav">
+                <a href="/" class="active">首页</a>
+                <a href="/explore">案例广场</a>
+                <a href="/upload">上传案例</a>
+                <a href="/help">帮助中心</a>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div class="navbar-search">
+                <span class="navbar-search-icon">🔍</span>
+                <input type="text" placeholder="搜索案例...">
+            </div>
+            <a href="/login" class="navbar-btn">登录</a>
+            <a href="/upload" class="navbar-btn primary">上传案例</a>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span>🚀</span>
+                <span>合一AI效能实验室官方平台</span>
+            </div>
+            <h1 class="hero-title">发现优质AI技能<br>助力高效学习成长</h1>
+            <p class="hero-subtitle">汇集学员优秀AI案例，支持OpenClaw/Claude Code格式<br>一键下载导入，快速提升AI应用能力</p>
+            <div class="hero-actions">
+                <button class="hero-btn primary">浏览案例</button>
+                <button class="hero-btn secondary">了解更多</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 统计数据 -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-value">1,234</div>
+            <div class="stat-label">优质案例</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">5,678</div>
+            <div class="stat-label">注册学员</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">45.6K</div>
+            <div class="stat-label">累计下载</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">98%</div>
+            <div class="stat-label">好评率</div>
+        </div>
+    </div>
+
+    <!-- 主内容 -->
+    <div class="container">
+        <!-- 分类标签 -->
+        <section class="categories-section">
+            <div class="section-header">
+                <h2 class="section-title">📂 按分类浏览</h2>
+            </div>
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category-icon">✍️</div>
+                    <div class="category-name">写作助手</div>
+                    <div class="category-count">326 个案例</div>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">📊</div>
+                    <div class="category-name">数据分析</div>
+                    <div class="category-count">245 个案例</div>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">⚙️</div>
+                    <div class="category-name">自动化</div>
+                    <div class="category-count">198 个案例</div>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">👨‍💻</div>
+                    <div class="category-name">开发工具</div>
+                    <div class="category-count">167 个案例</div>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">⚡</div>
+                    <div class="category-name">效率提升</div>
+                    <div class="category-count">134 个案例</div>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🔬</div>
+                    <div class="category-name">研究分析</div>
+                    <div class="category-count">89 个案例</div>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🎨</div>
+                    <div class="category-name">设计辅助</div>
+                    <div class="category-count">56 个案例</div>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">📦</div>
+                    <div class="category-name">其他</div>
+                    <div class="category-count">19 个案例</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 精选案例 -->
+        <section style="margin-bottom: 40px;">
+            <div class="section-header">
+                <h2 class="section-title">⭐ 精选案例</h2>
+                <a href="/explore" class="section-more">查看更多 →</a>
+            </div>
+            <div class="featured-grid">
+                <div class="case-card">
+                    <div class="case-cover featured">
+                        <span>📝</span>
+                    </div>
+                    <div class="case-body">
+                        <h3 class="case-title">AI写作助手 - 文章生成模板</h3>
+                        <p class="case-desc">强大的AI写作助手，支持多种风格文章生成，包括新闻报道、技术文档、营销文案等。内置智能优化功能。</p>
+                        <div class="case-tags">
+                            <span class="case-tag">写作助手</span>
+                            <span class="case-tag">AI辅助</span>
+                        </div>
+                        <div class="case-footer">
+                            <div class="case-author">
+                                <div class="author-avatar">张</div>
+                                <span>张三</span>
+                            </div>
+                            <div class="case-stats">
+                                <span>📥 1.2k</span>
+                                <span>👍 156</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-cover" style="background: linear-gradient(135deg, #10B981, #059669);">
+                        <span>📊</span>
+                    </div>
+                    <div class="case-body">
+                        <h3 class="case-title">数据可视化分析工具</h3>
+                        <p class="case-desc">自动生成各类数据图表，支持多种数据格式导入，一键生成专业可视化报告。</p>
+                        <div class="case-tags">
+                            <span class="case-tag">数据分析</span>
+                            <span class="case-tag">可视化</span>
+                        </div>
+                        <div class="case-footer">
+                            <div class="case-author">
+                                <div class="author-avatar" style="background: #10B981;">李</div>
+                                <span>李四</span>
+                            </div>
+                            <div class="case-stats">
+                                <span>📥 968</span>
+                                <span>👍 124</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-cover" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
+                        <span>⚙️</span>
+                    </div>
+                    <div class="case-body">
+                        <h3 class="case-title">办公自动化流程引擎</h3>
+                        <p class="case-desc">自定义办公自动化流程，支持文档处理、邮件管理、数据同步等场景，提升工作效率。</p>
+                        <div class="case-tags">
+                            <span class="case-tag">自动化</span>
+                            <span class="case-tag">办公</span>
+                        </div>
+                        <div class="case-footer">
+                            <div class="case-author">
+                                <div class="author-avatar" style="background: #F59E0B;">王</div>
+                                <span>王五</span>
+                            </div>
+                            <div class="case-stats">
+                                <span>📥 856</span>
+                                <span>👍 98</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-cover" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">
+                        <span>👨‍💻</span>
+                    </div>
+                    <div class="case-body">
+                        <h3 class="case-title">代码审查与优化助手</h3>
+                        <p class="case-desc">智能代码审查工具，自动检测代码问题，提供优化建议，支持多种编程语言。</p>
+                        <div class="case-tags">
+                            <span class="case-tag">开发工具</span>
+                            <span class="case-tag">代码审查</span>
+                        </div>
+                        <div class="case-footer">
+                            <div class="case-author">
+                                <div class="author-avatar" style="background: #8B5CF6;">赵</div>
+                                <span>赵六</span>
+                            </div>
+                            <div class="case-stats">
+                                <span>📥 723</span>
+                                <span>👍 87</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-cover" style="background: linear-gradient(135deg, #EC4899, #DB2777);">
+                        <span>⚡</span>
+                    </div>
+                    <div class="case-body">
+                        <h3 class="case-title">学习笔记智能整理</h3>
+                        <p class="case-desc">自动整理学习笔记，提取关键知识点，生成思维导图，助力知识系统化管理。</p>
+                        <div class="case-tags">
+                            <span class="case-tag">效率提升</span>
+                            <span class="case-tag">学习工具</span>
+                        </div>
+                        <div class="case-footer">
+                            <div class="case-author">
+                                <div class="author-avatar" style="background: #EC4899;">孙</div>
+                                <span>孙七</span>
+                            </div>
+                            <div class="case-stats">
+                                <span>📥 612</span>
+                                <span>👍 76</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-cover" style="background: linear-gradient(135deg, #06B6D4, #0891B2);">
+                        <span>🔬</span>
+                    </div>
+                    <div class="case-body">
+                        <h3 class="case-title">研究文献速读助手</h3>
+                        <p class="case-desc">快速提取文献核心内容，生成摘要和关键点，帮助研究者高效筛选文献。</p>
+                        <div class="case-tags">
+                            <span class="case-tag">研究分析</span>
+                            <span class="case-tag">文献阅读</span>
+                        </div>
+                        <div class="case-footer">
+                            <div class="case-author">
+                                <div class="author-avatar" style="background: #06B6D4;">周</div>
+                                <span>周八</span>
+                            </div>
+                            <div class="case-stats">
+                                <span>📥 489</span>
+                                <span>👍 65</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 活跃作者 -->
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">👨‍🏫 活跃作者</h2>
+                <a href="/authors" class="section-more">查看全部 →</a>
+            </div>
+            <div class="authors-grid">
+                <div class="author-card">
+                    <div class="avatar">张</div>
+                    <div class="author-name">张三</div>
+                    <div class="author-title">资深学员</div>
+                    <div class="author-stats">
+                        <span>8个案例</span>
+                        <span>1.2k下载</span>
+                    </div>
+                </div>
+                <div class="author-card">
+                    <div class="avatar" style="background: #10B981;">李</div>
+                    <div class="author-name">李四</div>
+                    <div class="author-title">优秀学员</div>
+                    <div class="author-stats">
+                        <span>6个案例</span>
+                        <span>986下载</span>
+                    </div>
+                </div>
+                <div class="author-card">
+                    <div class="avatar" style="background: #F59E0B;">王</div>
+                    <div class="author-name">王五</div>
+                    <div class="author-title">活跃贡献者</div>
+                    <div class="author-stats">
+                        <span>5个案例</span>
+                        <span>756下载</span>
+                    </div>
+                </div>
+                <div class="author-card">
+                    <div class="avatar" style="background: #8B5CF6;">赵</div>
+                    <div class="author-name">赵六</div>
+                    <div class="author-title">新晋作者</div>
+                    <div class="author-stats">
+                        <span>4个案例</span>
+                        <span>543下载</span>
+                    </div>
+                </div>
+                <div class="author-card">
+                    <div class="avatar" style="background: #EC4899;">孙</div>
+                    <div class="author-name">孙七</div>
+                    <div class="author-title">技术达人</div>
+                    <div class="author-stats">
+                        <span>4个案例</span>
+                        <span>489下载</span>
+                    </div>
+                </div>
+                <div class="author-card">
+                    <div class="avatar" style="background: #06B6D4;">周</div>
+                    <div class="author-name">周八</div>
+                    <div class="author-title">学习之星</div>
+                    <div class="author-stats">
+                        <span>3个案例</span>
+                        <span>378下载</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">学员案例库</div>
+                <p class="footer-desc">合一AI效能实验室官方案例分享平台，助力学员AI技能学习与成长。</p>
+            </div>
+            <div>
+                <div class="footer-title">平台</div>
+                <ul class="footer-links">
+                    <li><a href="/">首页</a></li>
+                    <li><a href="/explore">案例广场</a></li>
+                    <li><a href="/upload">上传案例</a></li>
+                    <li><a href="/authors">优秀作者</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-title">帮助</div>
+                <ul class="footer-links">
+                    <li><a href="/help/import">导入教程</a></li>
+                    <li><a href="/help/upload">上传指南</a></li>
+                    <li><a href="/help/faq">常见问题</a></li>
+                    <li><a href="/contact">联系我们</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-title">关于</div>
+                <ul class="footer-links">
+                    <li><a href="/about">关于我们</a></li>
+                    <li><a href="/terms">使用条款</a></li>
+                    <li><a href="/privacy">隐私政策</a></li>
+                    <li><a href="/feedback">意见反馈</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 学员案例库 · 版本 1.2.0 · 合一AI效能实验室</p>
+        </div>
+    </footer>
+
+    <script>
+        // 搜索框交互
+        const searchInput = document.querySelector('.navbar-search input');
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && searchInput.value.trim()) {
+                window.location.href = '/search?q=' + encodeURIComponent(searchInput.value);
+            }
+        });
+
+        // 分类卡片点击
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const categoryName = card.querySelector('.category-name').textContent;
+                window.location.href = '/explore?category=' + encodeURIComponent(categoryName);
+            });
+        });
+
+        // 案例卡片点击
+        document.querySelectorAll('.case-card').forEach(card => {
+            card.addEventListener('click', () => {
+                window.location.href = '/case/123';
+            });
+        });
+
+        // 作者卡片点击
+        document.querySelectorAll('.author-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const authorName = card.querySelector('.author-name').textContent;
+                window.location.href = '/author/' + encodeURIComponent(authorName);
+            });
+        });
+    </script>
+</body>
+</html>

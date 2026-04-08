@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>案例广场 - 学员案例库</title>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --text-light: #9CA3AF;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --bg-tertiary: #F3F4F6;
+            --border-color: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* === 导航栏 === */
+        .navbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .navbar-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        .navbar-nav a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .navbar-nav a:hover,
+        .navbar-nav a.active {
+            color: var(--primary-color);
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .navbar-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .navbar-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .navbar-btn.primary:hover {
+            background: var(--primary-hover);
+        }
+
+        /* === 主容器 === */
+        .container {
+            max-width: 1400px;
+            margin: 80px auto 40px;
+            padding: 0 24px;
+        }
+
+        /* === 搜索头部 === */
+        .search-header {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            background: var(--bg-secondary);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--bg-primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .search-btn {
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        /* === 主布局 === */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        /* === 筛选侧边栏 === */
+        .filter-sidebar {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+            position: sticky;
+            top: 90px;
+        }
+
+        .filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .filter-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .filter-reset {
+            font-size: 13px;
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .filter-group {
+            margin-bottom: 24px;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        /* 标签筛选 */
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-filter {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .tag-filter:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tag-filter.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* 单选筛选 */
+        .radio-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .radio-item input[type="radio"] {
+            accent-color: var(--primary-color);
+        }
+
+        .radio-item label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        /* 排序选项 */
+        .sort-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sort-option {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sort-option:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .sort-option.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* === 内容区域 === */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* 工具栏 */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .result-count {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .result-count strong {
+            color: var(--text-primary);
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 2px;
+        }
+
+        .view-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* 案例网格 */
+        .case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* 案例卡片 */
+        .case-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .case-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .case-cover {
+            height: 160px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            position: relative;
+        }
+
+        .case-cover.featured::after {
+            content: '⭐ 精选';
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .case-body {
+            padding: 16px;
+        }
+
+        .case-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .case-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .case-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .case-tag {
+            padding: 4px 10px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .case-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .case-author {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .author-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .case-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .case-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 列表视图 */
+        .case-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .case-list-item {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .case-list-item:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .case-list-cover {
+            width: 120px;
+            height: 90px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+
+        .case-list-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .case-list-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .case-list-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .case-list-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .page-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 0 12px;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .empty-btn {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+        }
+
+        /* 移动端筛选按钮 */
+        .mobile-filter-btn {
+            display: none;
+            padding: 10px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+
+        /* 筛选面板（移动端） */
+        .filter-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+        }
+
+        .filter-panel.active {
+            display: flex;
+        }
+
+        .filter-panel-content {
+            width: 280px;
+            height: 100%;
+            background: var(--bg-primary);
+            overflow-y: auto;
+        }
+
+        .filter-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .filter-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-sidebar {
+                display: none;
+            }
+
+            .mobile-filter-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .search-header {
+                padding: 16px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .case-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .case-list-item {
+                flex-direction: column;
+            }
+
+            .case-list-cover {
+                width: 100%;
+                height: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="navbar-logo">学员案例库</a>
+            <div class="navbar-nav">
+                <a href="/" class="active">案例广场</a>
+                <a href="/my-cases">我的案例</a>
+                <a href="/help">帮助中心</a>
+            </div>
+        </div>
+        <div class="navbar-user">
+            <a href="/upload" class="navbar-btn primary">上传案例</a>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 搜索头部 -->
+        <div class="search-header">
+            <h1 class="search-title">发现优秀案例</h1>
+            <div class="search-box">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="搜索案例标题、描述或标签..." value="写作助手">
+                </div>
+                <button class="search-btn">搜索</button>
+            </div>
+        </div>
+
+        <!-- 移动端筛选按钮 -->
+        <button class="mobile-filter-btn" id="mobileFilterBtn">
+            🔧 筛选与排序
+        </button>
+
+        <!-- 主布局 -->
+        <div class="main-layout">
+            <!-- 筛选侧边栏 -->
+            <aside class="filter-sidebar">
+                <div class="filter-header">
+                    <span class="filter-title">筛选条件</span>
+                    <button class="filter-reset">重置全部</button>
+                </div>
+
+                <!-- 分类标签 -->
+                <div class="filter-group">
+                    <div class="filter-label">分类标签</div>
+                    <div class="tag-list">
+                        <div class="tag-filter selected">全部</div>
+                        <div class="tag-filter">写作助手</div>
+                        <div class="tag-filter">数据分析</div>
+                        <div class="tag-filter">自动化</div>
+                        <div class="tag-filter">开发工具</div>
+                        <div class="tag-filter">效率提升</div>
+                        <div class="tag-filter">研究分析</div>
+                        <div class="tag-filter">设计辅助</div>
+                        <div class="tag-filter">其他</div>
+                    </div>
+                </div>
+
+                <!-- 技能包格式 -->
+                <div class="filter-group">
+                    <div class="filter-label">技能包格式</div>
+                    <div class="radio-list">
+                        <div class="radio-item">
+                            <input type="radio" id="format-all" name="format" checked>
+                            <label for="format-all">全部</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="format-openclaw" name="format">
+                            <label for="format-openclaw">OpenClaw</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="format-claude" name="format">
+                            <label for="format-claude">Claude Code</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 排序方式 -->
+                <div class="filter-group">
+                    <div class="filter-label">排序方式</div>
+                    <div class="sort-options">
+                        <div class="sort-option selected">最新发布</div>
+                        <div class="sort-option">最多下载</div>
+                        <div class="sort-option">最多点赞</div>
+                        <div class="sort-option">最多收藏</div>
+                    </div>
+                </div>
+
+                <!-- 状态筛选 -->
+                <div class="filter-group">
+                    <div class="filter-label">案例状态</div>
+                    <div class="radio-list">
+                        <div class="radio-item">
+                            <input type="radio" id="status-all" name="status" checked>
+                            <label for="status-all">全部</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="status-featured" name="status">
+                            <label for="status-featured">精选案例</label>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 内容区域 -->
+            <div class="content-area">
+                <!-- 工具栏 -->
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <span class="result-count">找到 <strong>156</strong> 个案例</span>
+                        <span style="color: var(--text-light); font-size: 14px;">"写作助手" 的搜索结果</span>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn active" id="gridViewBtn">⊞</button>
+                        <button class="view-btn" id="listViewBtn">☰</button>
+                    </div>
+                </div>
+
+                <!-- 案例网格视图 -->
+                <div class="case-grid" id="caseGrid">
+                    <!-- 案例卡片 1 -->
+                    <div class="case-card">
+                        <div class="case-cover featured">
+                            <span>📝</span>
+                        </div>
+                        <div class="case-body">
+                            <h3 class="case-title">AI写作助手 - 文章生成模板</h3>
+                            <p class="case-desc">强大的AI写作助手，支持多种风格文章生成，包括新闻报道、技术文档、营销文案等。</p>
+                            <div class="case-tags">
+                                <span class="case-tag">写作助手</span>
+                                <span class="case-tag">AI辅助</span>
+                            </div>
+                            <div class="case-meta">
+                                <div class="case-author">
+                                    <div class="author-avatar">张</div>
+                                    <span>张三</span>
+                                </div>
+                                <div class="case-stats">
+                                    <span class="case-stat">📥 1.2k</span>
+                                    <span class="case-stat">👍 156</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 案例卡片 2 -->
+                    <div class="case-card">
+                        <div class="case-cover" style="background: linear-gradient(135deg, #F59E0B, #EF4444);">
+                            <span>✨</span>
+                        </div>
+                        <div class="case-body">
+                            <h3 class="case-title">文案润色优化工具</h3>
+                            <p class="case-desc">智能优化文章语言表达，改进文章结构，提升可读性和专业度。</p>
+                            <div class="case-tags">
+                                <span class="case-tag">写作助手</span>
+                                <span class="case-tag">优化</span>
+                            </div>
+                            <div class="case-meta">
+                                <div class="case-author">
+                                    <div class="author-avatar" style="background: #10B981;">李</div>
+                                    <span>李四</span>
+                                </div>
+                                <div class="case-stats">
+                                    <span class="case-stat">📥 856</span>
+                                    <span class="case-stat">👍 92</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 案例卡片 3 -->
+                    <div class="case-card">
+                        <div class="case-cover" style="background: linear-gradient(135deg, #10B981, #059669);">
+                            <span>📰</span>
+                        </div>
+                        <div class="case-body">
+                            <h3 class="case-title">新闻稿自动生成器</h3>
+                            <p class="case-desc">根据关键信息快速生成专业新闻稿，支持多种新闻风格和格式。</p>
+                            <div class="case-tags">
+                                <span class="case-tag">写作助手</span>
+                                <span class="case-tag">新闻</span>
+                            </div>
+                            <div class="case-meta">
+                                <div class="case-author">
+                                    <div class="author-avatar" style="background: #F59E0B;">王</div>
+                                    <span>王五</span>
+                                </div>
+                                <div class="case-stats">
+                                    <span class="case-stat">📥 623</span>
+                                    <span class="case-stat">👍 78</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 案例卡片 4 -->
+                    <div class="case-card">
+                        <div class="case-cover" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">
+                            <span>📚</span>
+                        </div>
+                        <div class="case-body">
+                            <h3 class="case-title">学术论文写作助手</h3>
+                            <p class="case-desc">辅助学术论文写作，提供结构建议、引用格式化、查重等功能。</p>
+                            <div class="case-tags">
+                                <span class="case-tag">写作助手</span>
+                                <span class="case-tag">学术</span>
+                            </div>
+                            <div class="case-meta">
+                                <div class="case-author">
+                                    <div class="author-avatar" style="background: #8B5CF6;">赵</div>
+                                    <span>赵六</span>
+                                </div>
+                                <div class="case-stats">
+                                    <span class="case-stat">📥 445</span>
+                                    <span class="case-stat">👍 61</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 案例卡片 5 -->
+                    <div class="case-card">
+                        <div class="case-cover" style="background: linear-gradient(135deg, #EC4899, #DB2777);">
+                            <span>🎯</span>
+                        </div>
+                        <div class="case-body">
+                            <h3 class="case-title">营销文案生成器</h3>
+                            <p class="case-desc">快速生成吸引人的营销文案，支持多种行业和产品类型。</p>
+                            <div class="case-tags">
+                                <span class="case-tag">写作助手</span>
+                                <span class="case-tag">营销</span>
+                            </div>
+                            <div class="case-meta">
+                                <div class="case-author">
+                                    <div class="author-avatar" style="background: #EC4899;">孙</div>
+                                    <span>孙七</span>
+                                </div>
+                                <div class="case-stats">
+                                    <span class="case-stat">📥 389</span>
+                                    <span class="case-stat">👍 54</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 案例卡片 6 -->
+                    <div class="case-card">
+                        <div class="case-cover" style="background: linear-gradient(135deg, #06B6D4, #0891B2);">
+                            <span>✍️</span>
+                        </div>
+                        <div class="case-body">
+                            <h3 class="case-title">多语言翻译写作</h3>
+                            <p class="case-desc">支持多语言写作和翻译，帮助快速生成多语种内容。</p>
+                            <div class="case-tags">
+                                <span class="case-tag">写作助手</span>
+                                <span class="case-tag">翻译</span>
+                            </div>
+                            <div class="case-meta">
+                                <div class="case-author">
+                                    <div class="author-avatar" style="background: #06B6D4;">周</div>
+                                    <span>周八</span>
+                                </div>
+                                <div class="case-stats">
+                                    <span class="case-stat">📥 278</span>
+                                    <span class="case-stat">👍 42</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 案例列表视图（隐藏） -->
+                <div class="case-list" id="caseList" style="display: none;">
+                    <div class="case-list-item">
+                        <div class="case-list-cover" style="background: linear-gradient(135deg, #667eea, #764ba2);">📝</div>
+                        <div class="case-list-body">
+                            <h3 class="case-list-title">AI写作助手 - 文章生成模板 ⭐</h3>
+                            <p class="case-list-desc">强大的AI写作助手，支持多种风格文章生成，包括新闻报道、技术文档、营销文案等。内置智能优化功能，可以自动改进文章结构和语言表达。</p>
+                            <div class="case-list-meta">
+                                <span>张三</span>
+                                <span>写作助手 · AI辅助</span>
+                                <span>📥 1.2k</span>
+                                <span>👍 156</span>
+                                <span>2天前</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 更多列表项... -->
+                </div>
+
+                <!-- 分页 -->
+                <div class="pagination">
+                    <button class="page-btn" disabled>‹</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <span class="page-info">...</span>
+                    <button class="page-btn">10</button>
+                    <button class="page-btn">›</button>
+                    <span class="page-info">第 1 页 / 共 10 页 (156 条)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 移动端筛选面板 -->
+    <div class="filter-panel" id="filterPanel">
+        <div class="filter-panel-content">
+            <div class="filter-panel-header">
+                <span class="filter-title">筛选条件</span>
+                <button class="filter-close" id="filterClose">×</button>
+            </div>
+            <!-- 筛选内容（与侧边栏相同） -->
+            <div style="padding: 20px;">
+                <div class="filter-group">
+                    <div class="filter-label">分类标签</div>
+                    <div class="tag-list">
+                        <div class="tag-filter selected">全部</div>
+                        <div class="tag-filter">写作助手</div>
+                        <div class="tag-filter">数据分析</div>
+                        <div class="tag-filter">自动化</div>
+                        <div class="tag-filter">开发工具</div>
+                        <div class="tag-filter">效率提升</div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">排序方式</div>
+                    <div class="sort-options">
+                        <div class="sort-option selected">最新发布</div>
+                        <div class="sort-option">最多下载</div>
+                        <div class="sort-option">最多点赞</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 视图切换
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+        const caseGrid = document.getElementById('caseGrid');
+        const caseList = document.getElementById('caseList');
+
+        gridViewBtn.addEventListener('click', () => {
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+            caseGrid.style.display = 'grid';
+            caseList.style.display = 'none';
+        });
+
+        listViewBtn.addEventListener('click', () => {
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+            caseGrid.style.display = 'none';
+            caseList.style.display = 'flex';
+        });
+
+        // 标签筛选
+        document.querySelectorAll('.tag-filter').forEach(tag => {
+            tag.addEventListener('click', () => {
+                document.querySelectorAll('.tag-filter').forEach(t => t.classList.remove('selected'));
+                tag.classList.add('selected');
+            });
+        });
+
+        // 排序选项
+        document.querySelectorAll('.sort-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.sort-option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+        });
+
+        // 移动端筛选面板
+        const mobileFilterBtn = document.getElementById('mobileFilterBtn');
+        const filterPanel = document.getElementById('filterPanel');
+        const filterClose = document.getElementById('filterClose');
+
+        mobileFilterBtn.addEventListener('click', () => {
+            filterPanel.classList.add('active');
+        });
+
+        filterPanel.addEventListener('click', (e) => {
+            if (e.target === filterPanel) {
+                filterPanel.classList.remove('active');
+            }
+        });
+
+        filterClose.addEventListener('click', () => {
+            filterPanel.classList.remove('active');
+        });
+
+        // 分页按钮
+        document.querySelectorAll('.page-btn:not(:disabled)').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!btn.textContent.includes('‹') && !btn.textContent.includes('›') && !btn.textContent.includes('...')) {
+                    document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

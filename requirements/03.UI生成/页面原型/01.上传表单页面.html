@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传案例 - 学员案例库</title>
+    <style>
+        /* === CSS变量与基础重置 === */
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --text-light: #9CA3AF;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --bg-tertiary: #F3F4F6;
+            --border-color: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* === 导航栏 === */
+        .navbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .navbar-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        .navbar-nav a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .navbar-nav a:hover,
+        .navbar-nav a.active {
+            color: var(--primary-color);
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* === 主布局 === */
+        .container {
+            max-width: 800px;
+            margin: 80px auto 40px;
+            padding: 0 24px;
+        }
+
+        /* === 页面标题 === */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* === 表单卡片 === */
+        .form-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        /* === 步骤指示器 === */
+        .steps {
+            display: flex;
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .step {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -50%;
+            top: 16px;
+            width: 100%;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 1;
+        }
+
+        .step.active:not(:last-child)::after {
+            background: var(--primary-color);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--border-color);
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step.active .step-number {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .step.completed .step-number::before {
+            content: '✓';
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .step.active .step-label,
+        .step.completed .step-label {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* === 表单内容区 === */
+        .form-content {
+            padding: 32px;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        /* === 表单字段 === */
+        .form-field {
+            margin-bottom: 24px;
+        }
+
+        .form-field:last-child {
+            margin-bottom: 0;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .field-label .required {
+            color: var(--danger-color);
+            margin-left: 2px;
+        }
+
+        .field-hint {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .field-error {
+            font-size: 12px;
+            color: var(--danger-color);
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-field.error .field-error {
+            display: block;
+        }
+
+        .form-field.error input,
+        .form-field.error textarea,
+        .form-field.error select {
+            border-color: var(--danger-color);
+        }
+
+        /* === 输入控件 === */
+        input[type="text"],
+        input[type="url"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* === 文件上传区 === */
+        .file-upload {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload:hover,
+        .file-upload.dragover {
+            border-color: var(--primary-color);
+            background: rgba(79, 70, 229, 0.02);
+        }
+
+        .file-upload.has-file {
+            border-style: solid;
+            border-color: var(--success-color);
+        }
+
+        .file-upload-icon {
+            font-size: 48px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .file-upload-text {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .file-upload-hint {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .file-info {
+            display: none;
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .file-upload.has-file .file-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-name {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .file-remove {
+            color: var(--danger-color);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* === 标签选择器 === */
+        .tag-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-option {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-primary);
+        }
+
+        .tag-option:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tag-option.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* === 封面上传 === */
+        .cover-upload {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cover-preview {
+            width: 120px;
+            height: 80px;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 12px;
+            background: var(--bg-secondary);
+        }
+
+        .cover-preview.has-image {
+            border-style: solid;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .cover-btn {
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: background 0.2s;
+        }
+
+        .cover-btn:hover {
+            background: var(--border-color);
+        }
+
+        /* === 确认信息 === */
+        .confirm-list {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .confirm-item {
+            display: flex;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .confirm-item:last-child {
+            border-bottom: none;
+        }
+
+        .confirm-label {
+            width: 120px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .confirm-value {
+            flex: 1;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .confirm-value.empty {
+            color: var(--text-light);
+        }
+
+        /* === 版权声明 === */
+        .copyright-agree {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .copyright-agree input[type="checkbox"] {
+            margin-top: 2px;
+        }
+
+        .copyright-text {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .copyright-text a {
+            color: var(--primary-color);
+        }
+
+        /* === 表单操作按钮 === */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .actions-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .actions-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-primary:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        /* === 草稿保存提示 === */
+        .draft-status {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .draft-status.saved {
+            color: var(--success-color);
+        }
+
+        /* === 成功状态 === */
+        .success-state {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .success-desc {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .success-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        /* === 响应式 === */
+        @media (max-width: 768px) {
+            .navbar-nav {
+                display: none;
+            }
+
+            .container {
+                margin-top: 70px;
+                padding: 0 16px;
+            }
+
+            .steps {
+                padding: 16px;
+                overflow-x: auto;
+            }
+
+            .step {
+                min-width: 120px;
+            }
+
+            .form-content {
+                padding: 20px;
+            }
+
+            .form-actions {
+                padding: 16px 20px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .actions-left,
+            .actions-right {
+                width: 100%;
+            }
+
+            .btn {
+                flex: 1;
+            }
+
+            .confirm-item {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .confirm-label {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-logo">学员案例库</div>
+        <div class="navbar-nav">
+            <a href="#" class="active">上传案例</a>
+            <a href="#">我的案例</a>
+            <a href="#">案例广场</a>
+            <a href="#">帮助中心</a>
+        </div>
+        <div class="navbar-user">
+            <div class="avatar">张</div>
+            <span>张三</span>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">上传新案例</h1>
+            <p class="page-subtitle">分享你的优秀 Skills，帮助更多同学学习成长</p>
+        </div>
+
+        <!-- 表单卡片 -->
+        <div class="form-card">
+            <!-- 步骤指示器 -->
+            <div class="steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">基本信息</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">上传文件</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">确认提交</div>
+                </div>
+            </div>
+
+            <!-- 表单内容 -->
+            <form class="form-content" id="uploadForm">
+                <!-- 步骤1：基本信息 -->
+                <div class="form-section active" data-section="1">
+                    <div class="form-field">
+                        <label class="field-label">案例标题<span class="required">*</span></label>
+                        <input type="text" id="title" placeholder="给你的案例起个好名字吧" maxlength="100" required>
+                        <div class="field-hint">2-100个字符，简明扼要地描述案例功能</div>
+                        <div class="field-error">请输入案例标题</div>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">案例描述<span class="required">*</span></label>
+                        <textarea id="description" placeholder="详细描述你的案例功能、使用场景、技术特点等..." maxlength="2000" required></textarea>
+                        <div class="field-hint">10-2000个字符，帮助用户更好地了解你的案例</div>
+                        <div class="field-error">请输入案例描述（至少10个字符）</div>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">分类标签<span class="required">*</span></label>
+                        <div class="tag-selector" id="tagSelector">
+                            <div class="tag-option" data-value="writing">写作助手</div>
+                            <div class="tag-option" data-value="data">数据分析</div>
+                            <div class="tag-option" data-value="automation">自动化</div>
+                            <div class="tag-option" data-value="dev">开发工具</div>
+                            <div class="tag-option" data-value="productivity">效率提升</div>
+                            <div class="tag-option" data-value="research">研究分析</div>
+                            <div class="tag-option" data-value="design">设计辅助</div>
+                            <div class="tag-option" data-value="other">其他</div>
+                        </div>
+                        <div class="field-hint">请选择1-5个标签，帮助用户快速发现你的案例</div>
+                        <div class="field-error">请至少选择1个标签</div>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">封面图片</label>
+                        <div class="cover-upload">
+                            <div class="cover-preview" id="coverPreview">
+                                <span>预览</span>
+                            </div>
+                            <div>
+                                <button type="button" class="cover-btn" onclick="document.getElementById('coverInput').click()">选择封面</button>
+                                <input type="file" id="coverInput" accept="image/*" style="display: none;">
+                                <div class="field-hint">建议尺寸 800x600，支持 JPG、PNG 格式</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">技能包格式<span class="required">*</span></label>
+                        <select id="packageFormat" required>
+                            <option value="">请选择</option>
+                            <option value="openclaw">OpenClaw 格式</option>
+                            <option value="claudecode">Claude Code 格式</option>
+                        </select>
+                        <div class="field-error">请选择技能包格式</div>
+                    </div>
+                </div>
+
+                <!-- 步骤2：上传文件 -->
+                <div class="form-section" data-section="2">
+                    <div class="form-field">
+                        <label class="field-label">上传技能包<span class="required">*</span></label>
+                        <div class="file-upload" id="fileUpload">
+                            <div class="file-upload-icon">📁</div>
+                            <div class="file-upload-text">点击或拖拽文件到此处上传</div>
+                            <div class="file-upload-hint">支持 ZIP 格式，最大 100MB</div>
+                            <input type="file" id="fileInput" accept=".zip" style="display: none;" required>
+                        </div>
+                        <div class="file-info" id="fileInfo">
+                            <div>
+                                <div class="file-name" id="fileName">example-skill.zip</div>
+                                <div class="file-size" id="fileSize">2.5 MB</div>
+                            </div>
+                            <span class="file-remove" id="fileRemove">移除</span>
+                        </div>
+                        <div class="field-error">请上传技能包文件</div>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">文件结构检查</label>
+                        <div style="padding: 16px; background: var(--bg-secondary); border-radius: var(--radius-md); font-size: 13px; color: var(--text-secondary);">
+                            <div style="margin-bottom: 8px;">✓ 检测到 SKILL.md</div>
+                            <div style="margin-bottom: 8px;">✓ 检测到 references/ 目录</div>
+                            <div style="margin-bottom: 8px;">✓ 检测到主程序文件</div>
+                            <div style="color: var(--success-color);">📦 文件结构符合规范</div>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="field-label">使用说明</label>
+                        <textarea id="instructions" placeholder="（可选）填写使用说明、注意事项、常见问题等..." maxlength="1000"></textarea>
+                        <div class="field-hint">这些信息将帮助用户更好地使用你的案例</div>
+                    </div>
+                </div>
+
+                <!-- 步骤3：确认提交 -->
+                <div class="form-section" data-section="3">
+                    <div class="confirm-list">
+                        <div class="confirm-item">
+                            <div class="confirm-label">案例标题</div>
+                            <div class="confirm-value" id="confirmTitle">-</div>
+                        </div>
+                        <div class="confirm-item">
+                            <div class="confirm-label">案例描述</div>
+                            <div class="confirm-value" id="confirmDesc">-</div>
+                        </div>
+                        <div class="confirm-item">
+                            <div class="confirm-label">分类标签</div>
+                            <div class="confirm-value" id="confirmTags">-</div>
+                        </div>
+                        <div class="confirm-item">
+                            <div class="confirm-label">技能包格式</div>
+                            <div class="confirm-value" id="confirmFormat">-</div>
+                        </div>
+                        <div class="confirm-item">
+                            <div class="confirm-label">技能包文件</div>
+                            <div class="confirm-value" id="confirmFile">-</div>
+                        </div>
+                        <div class="confirm-item">
+                            <div class="confirm-label">封面图片</div>
+                            <div class="confirm-value" id="confirmCover">未设置</div>
+                        </div>
+                    </div>
+
+                    <div class="form-field" style="margin-top: 24px;">
+                        <label class="copyright-agree">
+                            <input type="checkbox" id="copyrightCheck" required>
+                            <div class="copyright-text">
+                                我确认此案例内容为原创或已获得授权，不侵犯任何第三方权益。我了解上传的内容将经过审核，违规内容将被下架处理。
+                                <a href="#">查看完整版权声明</a>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 成功状态 -->
+                <div class="form-section" data-section="success">
+                    <div class="success-state">
+                        <div class="success-icon">✓</div>
+                        <h2 class="success-title">提交成功！</h2>
+                        <p class="success-desc">你的案例已提交审核，预计72小时内完成审核。审核结果将通过通知告知你。</p>
+                        <div class="success-actions">
+                            <button type="button" class="btn btn-secondary" onclick="location.reload()">继续上传</button>
+                            <button type="button" class="btn btn-primary" onclick="location.href='/my-cases'">查看我的案例</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- 表单操作按钮 -->
+            <div class="form-actions" id="formActions">
+                <div class="actions-left">
+                    <button type="button" class="btn btn-secondary" id="saveDraftBtn">💾 保存草稿</button>
+                    <span class="draft-status" id="draftStatus">上次保存：未保存</span>
+                </div>
+                <div class="actions-right">
+                    <button type="button" class="btn btn-secondary" id="prevBtn" disabled>上一步</button>
+                    <button type="button" class="btn btn-primary" id="nextBtn">下一步</button>
+                    <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">提交审核</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === 状态管理 ===
+        const state = {
+            currentStep: 1,
+            totalSteps: 3,
+            selectedTags: [],
+            formData: {
+                title: '',
+                description: '',
+                tags: [],
+                coverImage: null,
+                packageFormat: '',
+                packageFile: null,
+                instructions: ''
+            }
+        };
+
+        // === DOM 元素 ===
+        const steps = document.querySelectorAll('.step');
+        const sections = document.querySelectorAll('.form-section');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const saveDraftBtn = document.getElementById('saveDraftBtn');
+        const draftStatus = document.getElementById('draftStatus');
+        const tagOptions = document.querySelectorAll('.tag-option');
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileRemove = document.getElementById('fileRemove');
+        const coverPreview = document.getElementById('coverPreview');
+        const coverInput = document.getElementById('coverInput');
+
+        // === 步骤导航 ===
+        function updateStep(step) {
+            state.currentStep = step;
+
+            // 更新步骤指示器
+            steps.forEach((s, index) => {
+                s.classList.remove('active', 'completed');
+                if (index + 1 === step) {
+                    s.classList.add('active');
+                } else if (index + 1 < step) {
+                    s.classList.add('completed');
+                }
+            });
+
+            // 更新表单区域
+            sections.forEach(s => s.classList.remove('active'));
+            const activeSection = document.querySelector(`.form-section[data-section="${step}"]`);
+            if (activeSection) {
+                activeSection.classList.add('active');
+            }
+
+            // 更新按钮状态
+            prevBtn.disabled = step === 1;
+
+            if (step === state.totalSteps) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+                updateConfirmInfo();
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        function validateCurrentStep() {
+            let isValid = true;
+
+            if (state.currentStep === 1) {
+                const title = document.getElementById('title');
+                const desc = document.getElementById('description');
+                const tags = document.querySelector('.tag-selector');
+                const format = document.getElementById('packageFormat');
+
+                if (!title.value.trim()) {
+                    title.closest('.form-field').classList.add('error');
+                    isValid = false;
+                } else {
+                    title.closest('.form-field').classList.remove('error');
+                }
+
+                if (desc.value.trim().length < 10) {
+                    desc.closest('.form-field').classList.add('error');
+                    isValid = false;
+                } else {
+                    desc.closest('.form-field').classList.remove('error');
+                }
+
+                if (state.selectedTags.length === 0) {
+                    tags.closest('.form-field').classList.add('error');
+                    isValid = false;
+                } else {
+                    tags.closest('.form-field').classList.remove('error');
+                }
+
+                if (!format.value) {
+                    format.closest('.form-field').classList.add('error');
+                    isValid = false;
+                } else {
+                    format.closest('.form-field').classList.remove('error');
+                }
+
+                // 保存数据
+                state.formData.title = title.value;
+                state.formData.description = desc.value;
+                state.formData.tags = state.selectedTags;
+                state.formData.packageFormat = format.value;
+            }
+
+            if (state.currentStep === 2) {
+                if (!state.formData.packageFile) {
+                    fileUpload.closest('.form-field').classList.add('error');
+                    isValid = false;
+                } else {
+                    fileUpload.closest('.form-field').classList.remove('error');
+                }
+
+                state.formData.instructions = document.getElementById('instructions').value;
+            }
+
+            return isValid;
+        }
+
+        function updateConfirmInfo() {
+            document.getElementById('confirmTitle').textContent = state.formData.title || '-';
+            document.getElementById('confirmDesc').textContent = state.formData.description || '-';
+            document.getElementById('confirmTags').textContent = state.selectedTags.map(t =>
+                document.querySelector(`.tag-option[data-value="${t}"]`).textContent
+            ).join('、') || '-';
+            document.getElementById('confirmFormat').textContent =
+                state.formData.packageFormat === 'openclaw' ? 'OpenClaw 格式' :
+                state.formData.packageFormat === 'claudecode' ? 'Claude Code 格式' : '-';
+            document.getElementById('confirmFile').textContent = state.formData.packageFile?.name || '-';
+            document.getElementById('confirmCover').textContent = state.formData.coverImage?.name || '未设置';
+        }
+
+        // === 事件监听 ===
+        nextBtn.addEventListener('click', () => {
+            if (validateCurrentStep()) {
+                updateStep(state.currentStep + 1);
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            updateStep(state.currentStep - 1);
+        });
+
+        // 标签选择
+        tagOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const value = option.dataset.value;
+
+                if (state.selectedTags.includes(value)) {
+                    state.selectedTags = state.selectedTags.filter(t => t !== value);
+                    option.classList.remove('selected');
+                } else {
+                    if (state.selectedTags.length >= 5) {
+                        alert('最多只能选择5个标签');
+                        return;
+                    }
+                    state.selectedTags.push(value);
+                    option.classList.add('selected');
+                }
+
+                if (state.selectedTags.length > 0) {
+                    document.querySelector('.tag-selector').closest('.form-field').classList.remove('error');
+                }
+            });
+        });
+
+        // 文件上传
+        fileUpload.addEventListener('click', () => fileInput.click());
+        fileUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        });
+        fileUpload.addEventListener('dragleave', () => {
+            fileUpload.classList.remove('dragover');
+        });
+        fileUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            handleFileUpload(file);
+        });
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            handleFileUpload(file);
+        });
+
+        function handleFileUpload(file) {
+            if (!file) return;
+
+            if (!file.name.endsWith('.zip')) {
+                alert('请上传 ZIP 格式的文件');
+                return;
+            }
+
+            if (file.size > 100 * 1024 * 1024) {
+                alert('文件大小不能超过 100MB');
+                return;
+            }
+
+            state.formData.packageFile = file;
+            fileUpload.classList.add('has-file');
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            fileUpload.closest('.form-field').classList.remove('error');
+        }
+
+        fileRemove.addEventListener('click', () => {
+            state.formData.packageFile = null;
+            fileInput.value = '';
+            fileUpload.classList.remove('has-file');
+        });
+
+        // 封面上传
+        coverInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                state.formData.coverImage = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    coverPreview.style.backgroundImage = `url(${e.target.result})`;
+                    coverPreview.classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 保存草稿
+        saveDraftBtn.addEventListener('click', () => {
+            // 模拟保存
+            draftStatus.textContent = '上次保存：刚刚';
+            draftStatus.classList.add('saved');
+            setTimeout(() => {
+                draftStatus.textContent = '上次保存：' + new Date().toLocaleTimeString();
+            }, 2000);
+        });
+
+        // 提交表单
+        submitBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            const copyrightCheck = document.getElementById('copyrightCheck');
+            if (!copyrightCheck.checked) {
+                alert('请同意版权声明');
+                return;
+            }
+
+            // 模拟提交
+            document.getElementById('formActions').style.display = 'none';
+            document.querySelector('.steps').style.display = 'none';
+            sections.forEach(s => s.classList.remove('active'));
+            document.querySelector('.form-section[data-section="success"]').classList.add('active');
+        });
+
+        // 工具函数
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // 实时验证
+        document.getElementById('title').addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.closest('.form-field').classList.remove('error');
+            }
+        });
+
+        document.getElementById('description').addEventListener('input', function() {
+            if (this.value.trim().length >= 10) {
+                this.closest('.form-field').classList.remove('error');
+            }
+        });
+
+        document.getElementById('packageFormat').addEventListener('change', function() {
+            if (this.value) {
+                this.closest('.form-field').classList.remove('error');
+            }
+        });
+    </script>
+</body>
+</html>
