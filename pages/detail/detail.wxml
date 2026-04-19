@@ -1,0 +1,114 @@
+<!-- 合一 Skills - 技能详情页 -->
+<view class="page">
+  <!-- 宣纸纹理背景 -->
+  <view class="page-bg"></view>
+
+  <scroll-view class="scroll-container" scroll-y show-scrollbar="{{false}}">
+
+    <view class="container">
+
+      <!-- 头部：技能基本信息 -->
+      <view class="detail-header">
+        <view class="header-top">
+          <view class="gate-badge-large">{{skill.gate}}</view>
+          <view class="skill-code">{{skill.code}}</view>
+        </view>
+        <view class="skill-num">{{skill.no}}</view>
+        <view class="skill-name">{{skill.name}}</view>
+        <view class="skill-desc">{{skill.desc}}</view>
+
+        <!-- 来源标签 -->
+        <view class="source-row">
+          <view class="source-tag {{skill.source}}">
+            <text class="source-dot"></text>
+            {{sourceLabels[skill.source]}}
+          </view>
+          <view class="skill-rating" wx:if="{{skill.rating}}">
+            <text wx:for="{{skill.rating}}" wx:key="*">★</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 一句话展开 -->
+      <view class="section human-speak" wx:if="{{skill.fullDesc}}">
+        <view class="section-label">这是什么</view>
+        <view class="section-content">{{skill.fullDesc}}</view>
+      </view>
+
+      <!-- 真实例子 -->
+      <view class="section examples-section" wx:if="{{skill.examples && skill.examples.length > 0}}">
+        <view class="section-label">看一看效果</view>
+
+        <view class="example-list">
+          <view class="example-item" wx:for="{{skill.examples}}" wx:key="index">
+            <view class="example-before">
+              <view class="example-label">你说</view>
+              <view class="example-content">{{item.input}}</view>
+            </view>
+            <view class="example-arrow">↓</view>
+            <view class="example-after">
+              <view class="example-label">AI 回</view>
+              <view class="example-content">{{item.output}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 怎么用 -->
+      <view class="section steps-section" wx:if="{{skill.steps}}">
+        <view class="section-label">怎么用</view>
+
+        <view class="steps-list">
+          <view class="step-item" wx:for="{{skill.steps}}" wx:for-index="idx" wx:key="*">
+            <view class="step-num">{{idx + 1}}</view>
+            <view class="step-content">{{item}}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 心法 -->
+      <view class="section dharma-section" wx:if="{{skill.dharma}}" bindtap="toggleDharma">
+        <view class="dharma-header">
+          <view class="dharma-label">背后的心法</view>
+          <view class="dharma-toggle {{dharmaExpanded ? 'expanded' : ''}}">
+            <text class="toggle-text">{{dharmaExpanded ? '收起' : '展开'}}</text>
+            <text class="toggle-icon">{{dharmaExpanded ? '↑' : '↓'}}</text>
+          </view>
+        </view>
+        <view class="dharma-content {{dharmaExpanded ? 'show' : ''}}">
+          <view class="dharma-text">{{skill.dharma}}</view>
+        </view>
+      </view>
+
+      <!-- 使用说明 -->
+      <view class="section install-section">
+        <view class="section-label">如何使用</view>
+        <view class="install-content">
+          <view class="install-step">1. 点下方"试一试"按钮</view>
+          <view class="install-step">2. 复制安装命令</view>
+          <view class="install-step">3. 在终端或 Claude Code 中运行</view>
+          <view class="install-note">
+            需先安装 SkillHub：<text class="code">npm install -g @skillhub/skills</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="action-buttons">
+        <view class="action-btn favorite {{isFavorited ? 'favorited' : ''}}" bindtap="toggleFavorite">
+          <text class="btn-icon">{{isFavorited ? '★' : '☆'}}</text>
+          <text class="btn-text">{{isFavorited ? '已收藏' : '收藏'}}</text>
+        </view>
+        <view class="action-btn primary" bindtap="onTryTap">
+          试 一 试
+        </view>
+      </view>
+
+      <!-- 底部留白 -->
+      <view class="bottom-spacer"></view>
+
+    </view>
+
+  </scroll-view>
+
+</view>

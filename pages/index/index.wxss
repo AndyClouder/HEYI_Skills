@@ -1,0 +1,320 @@
+/* 合一 Skills - 首页样式 */
+
+/* Hero 品牌 */
+.hero {
+  padding: 60rpx 0 40rpx;
+  text-align: center;
+}
+
+.hero-eyebrow {
+  font-size: 20rpx;
+  color: #857b6a;
+  letter-spacing: 0.3em;
+  margin-bottom: 16rpx;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.hero-title {
+  font-size: 64rpx;
+  font-weight: 500;
+  color: #1a1713;
+  letter-spacing: 0.15em;
+  line-height: 1.2;
+  margin-bottom: 12rpx;
+}
+
+.hero-subtitle {
+  font-size: 24rpx;
+  color: #3d362c;
+  letter-spacing: 0.1em;
+}
+
+/* 搜索区 */
+.search-section {
+  margin: 32rpx 0;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #ede7d8;
+  border-radius: 8rpx;
+  padding: 24rpx 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.search-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+  opacity: 0.5;
+}
+
+.search-placeholder {
+  font-size: 28rpx;
+  color: #857b6a;
+}
+
+.suggestions-scroll {
+  white-space: nowrap;
+}
+
+.suggestions {
+  display: inline-flex;
+  gap: 16rpx;
+  padding: 0 4rpx;
+}
+
+.suggestions .chip {
+  flex-shrink: 0;
+  padding: 12rpx 24rpx;
+  background: #f5f1e8;
+  border: 1rpx solid rgba(26, 23, 19, 0.08);
+  border-radius: 100rpx;
+  font-size: 24rpx;
+  color: #3d362c;
+  letter-spacing: 0.05em;
+  transition: all 0.3s;
+}
+
+.suggestions .chip:active {
+  background: #9c3a2a;
+  color: #f5f1e8;
+  border-color: #9c3a2a;
+}
+
+/* 分区标题 */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #1a1713;
+  letter-spacing: 0.15em;
+}
+
+.section-subtitle {
+  font-size: 22rpx;
+  color: #857b6a;
+  letter-spacing: 0.05em;
+}
+
+/* 六门网格 */
+.gates-section {
+  margin: 48rpx 0;
+}
+
+.gates-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rpx;
+  background: rgba(26, 23, 19, 0.08);
+  border: 1rpx solid rgba(26, 23, 19, 0.08);
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.gate-item {
+  background: #f5f1e8;
+  padding: 32rpx 16rpx 24rpx;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+.gate-item:active {
+  background: #ede7d8;
+}
+
+.gate-char {
+  font-size: 56rpx;
+  font-weight: 400;
+  color: #1a1713;
+  line-height: 1;
+  margin-bottom: 8rpx;
+}
+
+.gate-en {
+  font-size: 18rpx;
+  color: #857b6a;
+  letter-spacing: 0.1em;
+  margin-bottom: 4rpx;
+  text-transform: uppercase;
+}
+
+.gate-count {
+  font-size: 20rpx;
+  color: #c9bfa8;
+  font-family: -apple-system, BlinkMacSystemFont, monospace;
+}
+
+/* 热门技能 */
+.hot-section {
+  margin: 48rpx 0;
+}
+
+.hot-list {
+  background: rgba(26, 23, 19, 0.08);
+  border: 1rpx solid rgba(26, 23, 19, 0.08);
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.hot-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  background: #f5f1e8;
+  border-bottom: 1rpx solid rgba(26, 23, 19, 0.08);
+  transition: background 0.3s;
+}
+
+.hot-item:last-child {
+  border-bottom: none;
+}
+
+.hot-item:active {
+  background: #ede7d8;
+}
+
+.hot-rank {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ede7d8;
+  border-radius: 50%;
+  font-size: 24rpx;
+  color: #857b6a;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.hot-item:nth-child(1) .hot-rank,
+.hot-item:nth-child(2) .hot-rank,
+.hot-item:nth-child(3) .hot-rank {
+  background: #9c3a2a;
+  color: #f5f1e8;
+}
+
+.hot-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.hot-name {
+  font-size: 28rpx;
+  color: #1a1713;
+  margin-bottom: 6rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hot-desc {
+  font-size: 22rpx;
+  color: #857b6a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hot-arrow {
+  font-size: 32rpx;
+  color: #c9bfa8;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+/* 历史记录 */
+.history-section {
+  margin: 48rpx 0;
+}
+
+.history-scroll {
+  white-space: nowrap;
+}
+
+.history-list {
+  display: inline-flex;
+  gap: 16rpx;
+  padding: 0 4rpx;
+}
+
+.history-item {
+  flex-shrink: 0;
+  width: 200rpx;
+  background: #f5f1e8;
+  border: 1rpx solid rgba(26, 23, 19, 0.08);
+  border-radius: 8rpx;
+  padding: 20rpx;
+  text-align: center;
+}
+
+.history-char {
+  width: 40rpx;
+  height: 40rpx;
+  line-height: 40rpx;
+  background: #ede7d8;
+  border: 1rpx solid rgba(26, 23, 19, 0.16);
+  border-radius: 4rpx;
+  margin: 0 auto 12rpx;
+  font-size: 20rpx;
+  color: #3d362c;
+}
+
+.history-name {
+  font-size: 24rpx;
+  color: #1a1713;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 统计信息 */
+.stats-section {
+  margin: 64rpx 0 32rpx;
+  padding: 32rpx;
+  background: #ede7d8;
+  border-radius: 8rpx;
+  text-align: center;
+}
+
+.stats-text {
+  font-size: 24rpx;
+  color: #3d362c;
+  margin-bottom: 16rpx;
+}
+
+.stats-num {
+  font-size: 36rpx;
+  color: #9c3a2a;
+  font-weight: 500;
+}
+
+.stats-label {
+  font-size: 22rpx;
+  color: #3d362c;
+}
+
+.stats-divider {
+  margin: 0 16rpx;
+  color: #c9bfa8;
+}
+
+.stats-source {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24rpx;
+  font-size: 20rpx;
+  color: #857b6a;
+}
+
+.source-item.heyi {
+  color: #9c3a2a;
+}

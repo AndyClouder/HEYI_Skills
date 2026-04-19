@@ -1,0 +1,76 @@
+<!-- 合一 Skills - 收藏页面 -->
+<view class="page">
+  <view class="page-bg"></view>
+
+  <scroll-view class="scroll-container" scroll-y show-scrollbar="{{false}}">
+    <view class="container">
+
+      <!-- 收藏技能 -->
+      <view class="section" wx:if="{{favorites.length > 0}}">
+        <view class="section-header">
+          <text class="section-title">收 藏</text>
+          <text class="section-count">{{favorites.length}} 个技能</text>
+        </view>
+
+        <view class="skill-list">
+          <view
+            class="skill-item"
+            wx:for="{{favorites}}"
+            wx:key="code"
+            bindtap="onSkillTap"
+            data-code="{{item.code}}">
+            <view class="skill-left">
+              <view class="gate-tag">{{item.gate}}</view>
+              <view class="skill-info">
+                <view class="skill-name">{{item.name}}</view>
+                <view class="skill-desc">{{item.desc}}</view>
+              </view>
+            </view>
+            <view class="skill-arrow">→</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 - 收藏 -->
+      <view class="empty-state" wx:if="{{favorites.length === 0}}">
+        <view class="empty-icon">☆</view>
+        <text class="empty-text">还没有收藏任何技能</text>
+        <text class="empty-hint">去首页逛逛，遇到喜欢的就收藏吧</text>
+      </view>
+
+      <!-- 使用历史 -->
+      <view class="section history-section" wx:if="{{history.length > 0 && favorites.length > 0}}">
+        <view class="divider"></view>
+      </view>
+
+      <view class="section" wx:if="{{history.length > 0}}">
+        <view class="section-header">
+          <text class="section-title">已陪你</text>
+          <text class="section-count">{{history.length}} 次</text>
+          <text class="clear-btn" bindtap="onClearHistory">清空</text>
+        </view>
+
+        <view class="history-list">
+          <view
+            class="history-item"
+            wx:for="{{history}}"
+            wx:key="code"
+            bindtap="onSkillTap"
+            data-code="{{item.code}}">
+            <view class="history-gate">{{item.gate}}</view>
+            <view class="history-name">{{item.name}}</view>
+            <view class="history-time">{{item.time}}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 - 历史 -->
+      <view class="empty-state" wx:if="{{history.length === 0 && favorites.length === 0}}">
+        <view class="empty-icon">🍃</view>
+        <text class="empty-text">还没开始使用技能</text>
+        <text class="empty-hint">从今天开始，让 AI 陪你一起成长</text>
+      </view>
+
+    </view>
+  </scroll-view>
+</view>

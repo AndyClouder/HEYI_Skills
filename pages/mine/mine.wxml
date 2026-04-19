@@ -1,0 +1,81 @@
+<!-- 合一 Skills - 我的技能页面 -->
+<view class="page">
+  <view class="page-bg"></view>
+
+  <scroll-view class="scroll-container" scroll-y show-scrollbar="{{false}}">
+    <view class="container">
+
+      <!-- 上传区域 -->
+      <view class="upload-section">
+        <view class="upload-header">
+          <text class="upload-title">上传你的技能</text>
+          <text class="upload-desc">支持 Skills.md 格式</text>
+        </view>
+        <view class="upload-box" bindtap="onUploadTap">
+          <text class="upload-icon">📄</text>
+          <text class="upload-text">点击上传 Skills.md</text>
+          <text class="upload-hint">文件将存储在云数据库，支持跨设备同步</text>
+        </view>
+      </view>
+
+      <!-- 自定义技能列表 -->
+      <view class="section" wx:if="{{customSkills.length > 0}}">
+        <view class="section-header">
+          <text class="section-title">我的技能</text>
+          <text class="section-count">{{customSkills.length}} 个</text>
+        </view>
+
+        <view class="custom-list">
+          <view
+            class="custom-item"
+            wx:for="{{customSkills}}"
+            wx:key="_id">
+            <view class="custom-main" bindtap="onViewSkill" data-skill="{{item}}">
+              <view class="custom-header">
+                <view class="custom-name">{{item.name}}</view>
+                <view class="custom-tag custom">自制</view>
+              </view>
+              <view class="custom-desc">{{item.desc}}</view>
+              <view class="custom-meta">
+                <text class="custom-tech">{{item.techName || '未命名'}}</text>
+                <text class="custom-gate">{{item.gate}}门</text>
+              </view>
+            </view>
+            <view class="custom-actions">
+              <view class="action-btn" bindtap="onEditSkill" data-skill="{{item}}">编辑</view>
+              <view class="action-btn delete" bindtap="onDeleteSkill" data-skill="{{item}}">删除</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{customSkills.length === 0}}">
+        <view class="empty-icon">📝</view>
+        <text class="empty-text">还没有自定义技能</text>
+        <text class="empty-hint">上传 Skills.md 开始创建你的技能库</text>
+      </view>
+
+      <!-- Skills.md 格式说明 -->
+      <view class="format-section">
+        <view class="format-title">Skills.md 格式说明</view>
+        <view class="format-content">
+          <text class="format-code">
+# 我的技能
+
+## 技能一：每日复盘
+**描述**：把一天的工作学习整理成复盘
+**命令**：retro
+**提示词**：请帮我做今日复盘...
+
+## 技能二：会议纪要
+**描述**：把会议录音转成结构化纪要
+**命令**：meeting
+**提示词**：整理以下会议内容...
+          </text>
+        </view>
+      </view>
+
+    </view>
+  </scroll-view>
+</view>
