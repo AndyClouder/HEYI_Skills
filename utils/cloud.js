@@ -1,4 +1,6 @@
 // 合一 Skills - 云数据库操作封装
+// 静态导入数据文件
+const { defaultSkills } = require('./data.js')
 
 // 集合名称
 const COLLECTIONS = {
@@ -55,7 +57,10 @@ async function getOpenId() {
  */
 async function getSkills(filters = {}) {
   const db = getDB()
-  if (!db) return []
+  if (!db) {
+    // 如果云数据库未初始化，返回本地数据
+    return applyLocalFilters(defaultSkills, filters)
+  }
 
   try {
     let query = db.collection(COLLECTIONS.SKILLS)
@@ -87,12 +92,50 @@ async function getSkills(filters = {}) {
       })
     }
 
-    const res = await query.orderBy('createdAt', 'desc').get()
+    const res = await query.orderBy('installs', 'desc').get()
+
+    // 如果数据库为空，初始化数据
+    if (res.data.length === 0) {
+      await initSkillsData()
+      return applyLocalFilters(defaultSkills, filters)
+    }
+
     return res.data
   } catch (err) {
     console.error('获取技能失败', err)
-    return []
+    // 出错时返回本地数据
+    return applyLocalFilters(defaultSkills, filters)
   }
+}
+
+/**
+ * 本地过滤辅助函数
+ */
+function applyLocalFilters(skills, filters) {
+  let result = [...skills]
+
+  if (filters.gate) {
+    result = result.filter(s => s.gate === filters.gate)
+  }
+
+  if (filters.source) {
+    result = result.filter(s => s.source === filters.source)
+  }
+
+  if (filters.keyword) {
+    const keyword = filters.keyword.toLowerCase()
+    result = result.filter(s => {
+      const searchIn = [
+        s.name,
+        s.desc,
+        s.gate,
+        s.techName || ''
+      ].join(' ').toLowerCase()
+      return searchIn.includes(keyword)
+    })
+  }
+
+  return result
 }
 
 /**
@@ -100,17 +143,23 @@ async function getSkills(filters = {}) {
  */
 async function getSkillByCode(code) {
   const db = getDB()
-  if (!db) return null
+  if (!db) {
+    return defaultSkills.find(s => s.code === code) || null
+  }
 
   try {
     const res = await db.collection(COLLECTIONS.SKILLS).where({
       code: code
     }).get()
 
-    return res.data.length > 0 ? res.data[0] : null
+    if (res.data.length === 0) {
+      return defaultSkills.find(s => s.code === code) || null
+    }
+
+    return res.data[0]
   } catch (err) {
     console.error('获取技能失败', err)
-    return null
+    return defaultSkills.find(s => s.code === code) || null
   }
 }
 
@@ -126,6 +175,7 @@ async function createSkill(skillData) {
 
     const data = {
       ...skillData,
+      code: `CUSTOM_${Date.now()}`,
       source: 'custom',
       authorOpenId: openId,
       createdAt: new Date().getTime(),
@@ -213,6 +263,39 @@ async function getMySkills() {
   }
 }
 
+/**
+ * 初始化技能数据到云数据库
+ */
+async function initSkillsData() {
+  const db = getDB()
+  if (!db) return
+
+  try {
+    // 检查是否已初始化
+    const countRes = await db.collection(COLLECTIONS.SKILLS).count()
+    if (countRes.total > 0) return
+
+    // 批量添加（每次最多20条）
+    for (let i = 0; i < defaultSkills.length; i += 20) {
+      const batch = defaultSkills.slice(i, i + 20)
+      const promises = batch.map(skill =>
+        db.collection(COLLECTIONS.SKILLS).add({
+          data: {
+            ...skill,
+            createdAt: new Date().getTime(),
+            updatedAt: new Date().getTime()
+          }
+        })
+      )
+      await Promise.all(promises)
+    }
+
+    console.log(`已初始化 ${defaultSkills.length} 个技能`)
+  } catch (err) {
+    console.error('初始化技能数据失败', err)
+  }
+}
+
 // ============ 用户相关操作 ============
 
 /**
@@ -220,7 +303,13 @@ async function getMySkills() {
  */
 async function getUserData() {
   const db = getDB()
-  if (!db) return { favorites: [], history: [] }
+  if (!db) {
+    // 降级到本地存储
+    return {
+      favorites: wx.getStorageSync('heyi_favorites') || [],
+      history: wx.getStorageSync('heyi_history') || []
+    }
+  }
 
   try {
     const openId = await getOpenId()
@@ -249,7 +338,11 @@ async function getUserData() {
     }
   } catch (err) {
     console.error('获取用户数据失败', err)
-    return { favorites: [], history: [] }
+    // 降级到本地存储
+    return {
+      favorites: wx.getStorageSync('heyi_favorites') || [],
+      history: wx.getStorageSync('heyi_history') || []
+    }
   }
 }
 
@@ -258,7 +351,18 @@ async function getUserData() {
  */
 async function toggleFavorite(skillCode) {
   const db = getDB()
-  if (!db) return false
+  if (!db) {
+    // 降级到本地存储
+    let favorites = wx.getStorageSync('heyi_favorites') || []
+    const index = favorites.indexOf(skillCode)
+    if (index >= 0) {
+      favorites.splice(index, 1)
+    } else {
+      favorites.push(skillCode)
+    }
+    wx.setStorageSync('heyi_favorites', favorites)
+    return index < 0
+  }
 
   try {
     const openId = await getOpenId()
@@ -303,7 +407,15 @@ async function isFavorited(skillCode) {
  */
 async function addHistory(skillCode) {
   const db = getDB()
-  if (!db) return
+  if (!db) {
+    // 降级到本地存储
+    let history = wx.getStorageSync('heyi_history') || []
+    history = history.filter(h => h !== skillCode)
+    history.unshift(skillCode)
+    if (history.length > 50) history.pop()
+    wx.setStorageSync('heyi_history', history)
+    return
+  }
 
   try {
     const openId = await getOpenId()
@@ -312,7 +424,10 @@ async function addHistory(skillCode) {
     const history = userData.history || []
 
     // 移除重复记录
-    const filteredHistory = history.filter(h => h.code !== skillCode)
+    const filteredHistory = history.filter(h => {
+      const code = typeof h === 'string' ? h : h.code
+      return code !== skillCode
+    })
 
     // 添加到开头
     filteredHistory.unshift({
@@ -341,7 +456,11 @@ async function addHistory(skillCode) {
  */
 async function clearHistory() {
   const db = getDB()
-  if (!db) return false
+  if (!db) {
+    // 降级到本地存储
+    wx.removeStorageSync('heyi_history')
+    return true
+  }
 
   try {
     const openId = await getOpenId()
@@ -409,7 +528,9 @@ async function getHistorySkills() {
   if (!db) return []
 
   try {
-    const codes = history.map(h => h.code)
+    // 处理历史记录格式
+    const codes = history.map(h => typeof h === 'string' ? h : h.code)
+
     const chunks = []
     for (let i = 0; i < codes.length; i += 20) {
       chunks.push(codes.slice(i, i + 20))
@@ -432,6 +553,67 @@ async function getHistorySkills() {
   }
 }
 
+/**
+ * 搜索技能
+ */
+async function searchSkills(keyword) {
+  return getSkills({ keyword })
+}
+
+/**
+ * 根据门获取技能
+ */
+async function getSkillsByGate(gate) {
+  return getSkills({ gate })
+}
+
+/**
+ * 根据标签获取技能
+ */
+async function getSkillsByTag(tag) {
+  const allSkills = await getSkills()
+  return allSkills.filter(s => (s.tags || []).includes(tag))
+}
+
+/**
+ * 保存搜索历史
+ */
+function saveSearchHistory(keyword) {
+  try {
+    let history = wx.getStorageSync('heyi_search_history') || []
+    history = history.filter(k => k !== keyword)
+    history.unshift(keyword)
+    if (history.length > 10) history.pop()
+    wx.setStorageSync('heyi_search_history', history)
+  } catch (e) {
+    console.error('保存搜索历史失败', e)
+  }
+}
+
+/**
+ * 获取搜索历史
+ */
+function getSearchHistory() {
+  try {
+    return wx.getStorageSync('heyi_search_history') || []
+  } catch (e) {
+    return []
+  }
+}
+
+/**
+ * 清空搜索历史
+ */
+function clearSearchHistory() {
+  try {
+    wx.removeStorageSync('heyi_search_history')
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
+// 导出所有函数
 module.exports = {
   initCloud,
   getDB,
@@ -442,11 +624,19 @@ module.exports = {
   updateSkill,
   deleteSkill,
   getMySkills,
+  getCustomSkills: getMySkills, // 别名，兼容 mine.js
+  initSkillsData,
   getUserData,
   toggleFavorite,
   isFavorited,
   addHistory,
   clearHistory,
   getFavoriteSkills,
-  getHistorySkills
+  getHistorySkills,
+  searchSkills,
+  getSkillsByGate,
+  getSkillsByTag,
+  saveSearchHistory,
+  getSearchHistory,
+  clearSearchHistory
 }

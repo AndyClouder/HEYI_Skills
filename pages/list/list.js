@@ -1,37 +1,36 @@
-// 合一 Skills - 列表页逻辑
-import { gates } from '../../utils/data.js'
-import { getSkills } from '../../utils/cloud.js'
+// 列表页
+const { gates } = require('../../utils/data.js')
+const { getSkills } = require('../../utils/cloud.js')
 
 const app = getApp()
 
+const GATE_EXT = {
+  '观': { roman: 'i'   },
+  '思': { roman: 'ii'  },
+  '书': { roman: 'iii' },
+  '造': { roman: 'iv'  },
+  '行': { roman: 'v'   },
+  '和': { roman: 'vi'  },
+}
+
 Page({
   data: {
-    mode: 'gate', // gate 或 search
     gates: [],
     currentGate: '',
     gateInfo: {},
-    keyword: '',
-    searchFocus: false,
-    filteredSkills: [],
     allSkills: [],
+    filteredSkills: [],
     total: 0,
-    sourceLabels: {
-      skillhub: 'SkillHub 精选',
-      custom: '自制'
-    },
     loading: true
   },
 
   async onLoad(options) {
-    wx.showLoading({ title: '加载中...' })
-
+    wx.showLoading({ title: '读取中', mask: true })
     try {
-      // 从云数据库获取所有技能
       const allSkills = await getSkills()
-
-      // 计算每个门的技能数量
       const gatesWithCount = gates.map(g => ({
         ...g,
+        ...GATE_EXT[g.id],
         count: allSkills.filter(s => s.gate === g.id).length
       }))
 
@@ -42,137 +41,38 @@ Page({
         loading: false
       })
 
-      // 根据参数初始化
-      if (options.mode === 'search') {
-        this.setData({
-          mode: 'search',
-          searchFocus: true,
-          keyword: options.keyword || ''
-        })
-        if (options.keyword) {
-          this.performSearch(options.keyword)
-        } else {
-          this.setData({ filteredSkills: allSkills })
-        }
-      } else if (options.gate) {
-        this.setData({
-          mode: 'gate',
-          currentGate: options.gate
-        })
-        this.filterByGate(options.gate)
+      if (options.gate) {
+        this.applyGate(options.gate)
       } else {
-        // 默认显示全部
-        this.setData({
-          filteredSkills: allSkills
-        })
+        this.setData({ filteredSkills: allSkills })
       }
     } catch (err) {
-      console.error('加载失败', err)
-      wx.showToast({
-        title: '加载失败',
-        icon: 'none'
-      })
+      console.error(err)
+      wx.showToast({ title: '加载失败', icon: 'none' })
       this.setData({ loading: false })
     }
-
     wx.hideLoading()
   },
 
-  // 按六门筛选
-  filterByGate(gateId) {
+  applyGate(gateId) {
     if (!gateId) {
-      this.setData({
-        filteredSkills: this.data.allSkills,
-        gateInfo: {}
-      })
+      this.setData({ currentGate: '', gateInfo: {}, filteredSkills: this.data.allSkills })
+      wx.setNavigationBarTitle({ title: '全部技能' })
       return
     }
-
-    const gateInfo = gates.find(g => g.id === gateId)
+    const gateInfo = this.data.gates.find(g => g.id === gateId) || {}
     const filteredSkills = this.data.allSkills.filter(s => s.gate === gateId)
-
-    this.setData({
-      filteredSkills,
-      gateInfo
-    })
+    this.setData({ currentGate: gateId, gateInfo, filteredSkills })
+    wx.setNavigationBarTitle({ title: `${gateId}门` })
   },
 
-  // 执行搜索
-  performSearch(keyword) {
-    if (!keyword.trim()) {
-      this.setData({ filteredSkills: this.data.allSkills })
-      return
-    }
-
-    const filtered = this.data.allSkills.filter(s => {
-      const searchIn = [
-        s.name,
-        s.desc,
-        s.gate,
-        s.techName || ''
-      ].join(' ').toLowerCase()
-
-      return searchIn.includes(keyword.toLowerCase())
-    })
-
-    this.setData({
-      filteredSkills: filtered
-    })
-  },
-
-  // 点击筛选 Chip
   onGateFilter(e) {
-    const gate = e.currentTarget.dataset.gate
-    this.setData({
-      currentGate: gate,
-      keyword: ''
-    })
-
-    if (gate) {
-      this.filterByGate(gate)
-    } else {
-      this.setData({
-        filteredSkills: this.data.allSkills,
-        gateInfo: {}
-      })
-    }
+    this.applyGate(e.currentTarget.dataset.gate)
   },
 
-  // 搜索输入
-  onSearchInput(e) {
-    const keyword = e.detail.value
-    this.setData({ keyword })
-
-    if (keyword.trim()) {
-      this.performSearch(keyword)
-    } else {
-      this.setData({ filteredSkills: this.data.allSkills })
-    }
-  },
-
-  // 搜索确认
-  onSearchConfirm(e) {
-    const keyword = e.detail.value
-    this.performSearch(keyword)
-  },
-
-  // 清除搜索
-  onSearchClear() {
-    this.setData({
-      keyword: '',
-      filteredSkills: this.data.currentGate
-        ? this.data.allSkills.filter(s => s.gate === this.data.currentGate)
-        : this.data.allSkills
-    })
-  },
-
-  // 点击技能卡片
   async onSkillTap(e) {
     const code = e.currentTarget.dataset.code
     await app.addHistory(code)
-
-    wx.navigateTo({
-      url: `/pages/detail/detail?code=${code}`
-    })
+    wx.navigateTo({ url: `/pages/detail/detail?code=${code}` })
   }
 })

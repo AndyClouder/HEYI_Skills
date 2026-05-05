@@ -1,0 +1,73 @@
+<!-- 新手引导 -->
+<view class="page">
+  <view class="page-bg"></view>
+
+  <!-- 顶部：跳过 + 进度 -->
+  <view class="onb-head">
+    <view class="onb-dots">
+      <view class="dot {{step >= 0 ? 'on' : ''}}"></view>
+      <view class="dot {{step >= 1 ? 'on' : ''}}"></view>
+    </view>
+    <view class="onb-skip" bindtap="finish">跳过</view>
+  </view>
+
+  <!-- 步骤 0：六门 -->
+  <view class="onb-body" wx:if="{{step === 0}}">
+    <view class="onb-eyebrow">Six Gates</view>
+    <view class="onb-title">六 门</view>
+    <view class="onb-sub f-italic">observe · reflect · compose · create · execute · harmonize</view>
+
+    <view class="onb-text">
+      世间诸事，不过六件：<text class="t-cinnabar">看见、想明、写成、做出、做完、做久</text>。
+      <view class="break"></view>
+      30 个技能，按这六门归类。
+    </view>
+
+    <view class="gates-six">
+      <view class="gx" wx:for="{{gates}}" wx:key="id">
+        <view class="gx-char">{{item.id}}</view>
+        <view class="gx-en f-italic">{{item.en}}</view>
+        <view class="gx-desc">{{item.desc}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤 1：三律 -->
+  <view class="onb-body" wx:if="{{step === 1}}">
+    <view class="onb-eyebrow">Three Principles</view>
+    <view class="onb-title">三 律</view>
+    <view class="onb-sub f-italic">what we believe</view>
+
+    <view class="rule-list">
+      <view class="rule">
+        <view class="rule-num f-italic">one.</view>
+        <view class="rule-body">
+          <view class="rule-t">说人话，不说技术话</view>
+          <view class="rule-d">"总结 PDF"，不是 "Summarize CLI"</view>
+        </view>
+      </view>
+      <view class="hair"></view>
+      <view class="rule">
+        <view class="rule-num f-italic">two.</view>
+        <view class="rule-body">
+          <view class="rule-t">每一技都给例子</view>
+          <view class="rule-d">不是说明书，是看得见的回响</view>
+        </view>
+      </view>
+      <view class="hair"></view>
+      <view class="rule">
+        <view class="rule-num f-italic">three.</view>
+        <view class="rule-body">
+          <view class="rule-t">心法比命令重要</view>
+          <view class="rule-d">知道它为什么在，才知道怎么用</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="onb-foot">
+    <view class="btn-primary" bindtap="next" wx:if="{{step < 1}}">继 续</view>
+    <view class="btn-primary" bindtap="finish" wx:else>入 门</view>
+  </view>
+</view>

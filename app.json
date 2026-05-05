@@ -1,6 +1,9 @@
 {
   "pages": [
+    "pages/launch/launch",
+    "pages/onboarding/onboarding",
     "pages/index/index",
+    "pages/search/search",
     "pages/favorites/favorites",
     "pages/mine/mine",
     "pages/list/list",
@@ -8,28 +11,28 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#1a1713",
-    "navigationBarTitleText": "合一 Skills",
-    "navigationBarTextStyle": "white",
+    "navigationBarBackgroundColor": "#f5f1e8",
+    "navigationBarTitleText": "合一",
+    "navigationBarTextStyle": "black",
     "backgroundColor": "#f5f1e8"
   },
   "tabBar": {
-    "color": "#c9bfa8",
+    "color": "#857b6a",
     "selectedColor": "#9c3a2a",
     "backgroundColor": "#f5f1e8",
     "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "合一"
       },
       {
         "pagePath": "pages/favorites/favorites",
-        "text": "收藏"
+        "text": "藏"
       },
       {
         "pagePath": "pages/mine/mine",
-        "text": "我的技能"
+        "text": "己"
       }
     ]
   },

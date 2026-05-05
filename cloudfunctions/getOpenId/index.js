@@ -1,16 +1,19 @@
-// 云函数：获取用户 OpenID
+// 云函数入口文件
 const cloud = require('wx-server-sdk')
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 })
 
+// 云函数入口函数
 exports.main = async (event, context) => {
+  // 获取微信上下文
   const wxContext = cloud.getWXContext()
 
   return {
+    event,
     openid: wxContext.OPENID,
     appid: wxContext.APPID,
-    unionid: wxContext.UNIONID
+    unionid: wxContext.UNIONID,
   }
 }

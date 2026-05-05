@@ -1,100 +1,97 @@
-<!-- 合一 Skills - 首页 -->
+<!-- 首页 -->
 <view class="page">
-  <!-- 宣纸纹理背景 -->
   <view class="page-bg"></view>
 
   <view class="container">
 
-    <!-- 品牌区 -->
-    <view class="hero animate-rise">
-      <view class="hero-eyebrow">Heyi Skills · {{totalSkills}}技精选</view>
-      <view class="hero-title">合 一 · Skills</view>
-      <view class="hero-subtitle">非技术人的 AI 技能库</view>
-    </view>
-
-    <!-- 搜索区 -->
-    <view class="search-section animate-rise" style="animation-delay: 0.1s">
-      <view class="search-box" bindtap="onSearchTap">
-        <text class="search-icon">🔍</text>
-        <text class="search-placeholder">搜索技能，如"写公众号"</text>
-      </view>
-
-      <!-- 搜索建议 Chip -->
-      <scroll-view class="suggestions-scroll" scroll-x show-scrollbar="{{false}}">
-        <view class="suggestions">
-          <view class="chip" wx:for="{{searchSuggestions}}" wx:key="index" bindtap="onSuggestionTap" data-keyword="{{item}}">
-            {{item}}
-          </view>
+    <!-- 顶部品牌 -->
+    <view class="head animate-rise">
+      <view class="head-row">
+        <view class="seal">合</view>
+        <view class="head-meta">
+          <view class="head-en f-italic">heyi · thirty skills</view>
+          <view class="head-date f-mono">{{todayStr}}</view>
         </view>
-      </scroll-view>
+      </view>
+      <view class="head-title">合 一</view>
+      <view class="head-sub">非技术人的 AI 技能库 · 三 十 技</view>
     </view>
 
-    <!-- 六门概览 -->
-    <view class="gates-section animate-rise" style="animation-delay: 0.2s">
-      <view class="section-header">
-        <text class="section-title">六 门</text>
-        <text class="section-subtitle">按你需要做的事找技能</text>
+    <!-- 每日一念 -->
+    <view class="quote animate-rise" style="animation-delay:.08s">
+      <view class="quote-mark f-italic">"</view>
+      <view class="quote-text">{{dailyQuote.text}}</view>
+      <view class="quote-from f-italic">— {{dailyQuote.from}}</view>
+    </view>
+
+    <!-- 搜索入口 -->
+    <view class="search-entry animate-rise" style="animation-delay:.12s" bindtap="onSearchTap">
+      <view class="search-ico">⌕</view>
+      <view class="search-ph">搜一个技能，如「写公众号」</view>
+    </view>
+
+    <!-- 六门 -->
+    <view class="section animate-rise" style="animation-delay:.18s">
+      <view class="sec-head">
+        <view class="sec-label f-italic">six gates</view>
+        <view class="sec-title">六 门</view>
       </view>
 
       <view class="gates-grid">
-        <view class="gate-item" wx:for="{{gates}}" wx:key="id" bindtap="onGateTap" data-gate="{{item.id}}">
+        <view class="gate-cell" wx:for="{{gates}}" wx:key="id" bindtap="onGateTap" data-gate="{{item.id}}">
+          <view class="gate-num f-italic">{{item.roman}}</view>
           <view class="gate-char">{{item.id}}</view>
-          <view class="gate-en">{{item.en}}</view>
-          <view class="gate-count">{{item.count}}技</view>
+          <view class="gate-en f-italic">{{item.en}}</view>
+          <view class="gate-desc">{{item.shortDesc}}</view>
+          <view class="gate-count f-mono">{{item.count}} 技</view>
         </view>
       </view>
     </view>
 
-    <!-- 热门技能 -->
-    <view class="hot-section animate-rise" style="animation-delay: 0.3s">
-      <view class="section-header">
-        <text class="section-title">热 门</text>
-        <text class="section-subtitle">大家都在用</text>
+    <!-- 今日推荐 -->
+    <view class="section animate-rise" style="animation-delay:.25s">
+      <view class="sec-head">
+        <view class="sec-label f-italic">today's pick</view>
+        <view class="sec-title">今 日 荐</view>
       </view>
 
-      <view class="hot-list">
-        <view class="hot-item" wx:for="{{hotSkills}}" wx:key="code" bindtap="onSkillTap" data-code="{{item.code}}">
-          <view class="hot-rank">{{item.rank}}</view>
-          <view class="hot-info">
-            <view class="hot-name">{{item.name}}</view>
-            <view class="hot-desc">{{item.desc}}</view>
+      <view class="pick-list">
+        <view class="pick-item" wx:for="{{hotSkills}}" wx:key="code" bindtap="onSkillTap" data-code="{{item.code}}">
+          <view class="pick-left">
+            <view class="pick-no f-italic">{{item.no}}</view>
+            <view class="gate-chip">{{item.gate}}</view>
           </view>
-          <view class="hot-arrow">→</view>
+          <view class="pick-body">
+            <view class="pick-name">{{item.name}}</view>
+            <view class="pick-desc">{{item.desc}}</view>
+          </view>
+          <view class="pick-arrow f-italic">→</view>
         </view>
       </view>
     </view>
 
-    <!-- 历史记录 -->
-    <view class="history-section animate-rise" style="animation-delay: 0.4s" wx:if="{{history.length > 0}}">
-      <view class="section-header">
-        <text class="section-title">已 陪 你</text>
-        <text class="section-subtitle">{{history.length}} 次</text>
+    <!-- 最近 -->
+    <view class="section animate-rise" style="animation-delay:.32s" wx:if="{{historySkills.length > 0}}">
+      <view class="sec-head">
+        <view class="sec-label f-italic">recent</view>
+        <view class="sec-title">近 日 所 行</view>
       </view>
 
-      <scroll-view class="history-scroll" scroll-x show-scrollbar="{{false}}">
-        <view class="history-list">
-          <view class="history-item" wx:for="{{historySkills}}" wx:key="code" bindtap="onSkillTap" data-code="{{item.code}}">
-            <view class="history-char">{{item.gate}}</view>
-            <view class="history-name">{{item.name}}</view>
+      <scroll-view class="recent-scroll" scroll-x show-scrollbar="{{false}}">
+        <view class="recent-row">
+          <view class="recent-card" wx:for="{{historySkills}}" wx:key="code" bindtap="onSkillTap" data-code="{{item.code}}">
+            <view class="gate-chip">{{item.gate}}</view>
+            <view class="recent-name">{{item.name}}</view>
           </view>
         </view>
       </scroll-view>
     </view>
 
-    <!-- 统计信息 -->
-    <view class="stats-section animate-rise" style="animation-delay: 0.5s">
-      <view class="stats-text">
-        <text class="stats-num">{{totalSkills}}</text>
-        <text class="stats-label">个技能</text>
-        <text class="stats-divider"> · </text>
-        <text class="stats-num">6</text>
-        <text class="stats-label">门分类</text>
-      </view>
-      <view class="stats-source">
-        <text class="source-item heyi">● SkillHub 精选</text>
-        <text class="source-item">{{totalSkills}} 个真实可用技能</text>
-        <text class="source-item" wx:if="{{customSkillsCount > 0}}"> · 含 {{customSkillsCount}} 个自定义</text>
-      </view>
+    <!-- 底部款识 -->
+    <view class="colophon f-italic animate-rise" style="animation-delay:.4s">
+      <text class="cline"></text>
+      <text>heyi lab · 比你早一步的同路人</text>
+      <text class="cline"></text>
     </view>
 
   </view>

@@ -1,6 +1,5 @@
-// 合一 Skills - 详情页逻辑
-import { getSkillByCode } from '../../utils/cloud.js'
-import { gates } from '../../utils/data.js'
+// 详情页
+const { getSkillByCode } = require('../../utils/cloud.js')
 
 const app = getApp()
 
@@ -8,10 +7,6 @@ Page({
   data: {
     code: '',
     skill: {},
-    sourceLabels: {
-      skillhub: 'SkillHub 精选',
-      custom: '自制'
-    },
     isFavorited: false,
     dharmaExpanded: false,
     loading: true
@@ -19,133 +14,71 @@ Page({
 
   async onLoad(options) {
     const code = options.code
-
-    wx.showLoading({ title: '加载中...' })
-
+    wx.showLoading({ title: '读取中', mask: true })
     try {
       const skill = await getSkillByCode(code)
-
       if (!skill) {
         wx.hideLoading()
-        wx.showToast({
-          title: '技能不存在',
-          icon: 'none'
-        })
-        setTimeout(() => {
-          wx.navigateBack()
-        }, 1500)
+        wx.showToast({ title: '未见此技', icon: 'none' })
+        setTimeout(() => wx.navigateBack(), 1200)
         return
       }
-
-      // 检查是否收藏
       const isFavorited = await app.isFavorited(code)
-
-      this.setData({
-        code,
-        skill,
-        isFavorited,
-        loading: false
-      })
-
-      // 设置页面标题
-      wx.setNavigationBarTitle({
-        title: skill.gate
-      })
+      this.setData({ code, skill, isFavorited, loading: false })
+      wx.setNavigationBarTitle({ title: `${skill.gate} · ${skill.no}` })
     } catch (err) {
-      console.error('加载失败', err)
+      console.error(err)
       wx.hideLoading()
-      wx.showToast({
-        title: '加载失败',
-        icon: 'none'
-      })
-      setTimeout(() => {
-        wx.navigateBack()
-      }, 1500)
+      wx.showToast({ title: '加载失败', icon: 'none' })
     }
-
     wx.hideLoading()
   },
 
   async onShow() {
-    // 刷新收藏状态
     if (this.data.code) {
       const isFavorited = await app.isFavorited(this.data.code)
       this.setData({ isFavorited })
     }
   },
 
-  // 切换心法展开/收起
   toggleDharma() {
-    this.setData({
-      dharmaExpanded: !this.data.dharmaExpanded
-    })
+    this.setData({ dharmaExpanded: !this.data.dharmaExpanded })
   },
 
-  // 切换收藏
-  toggleFavorite() {
-    const { code, isFavorited } = this.data
-    app.saveFavorites(code)
-
-    this.setData({
-      isFavorited: !isFavorited
-    })
-
+  async toggleFavorite() {
+    const { code } = this.data
+    const result = await app.toggleFavorite(code)
+    this.setData({ isFavorited: result })
     wx.showToast({
-      title: isFavorited ? '已取消收藏' : '已收藏',
+      title: result ? '已藏' : '已散',
       icon: 'none',
-      duration: 1500
+      duration: 1200
     })
   },
 
-  // 点击"试一试"
   onTryTap() {
-    const { skill, code } = this.data
-
-    // 记录使用
-    app.addHistory(code)
-
-    // 生成安装指令
-    const installCommands = this.generateInstallCommand(skill)
-
+    const { skill } = this.data
+    const command = `skillhub install ${skill.techName}`
+    const guide = `第一步：安装 SkillHub\nnpm install -g @skillhub/skills\n\n第二步：安装此技能\n${command}\n\n在 OpenClaw / Claude Code 中运行即可。`
     wx.showModal({
-      title: '安装此技能',
-      content: installCommands.guide,
+      title: '试一试 · 安装指令',
+      content: guide,
       confirmText: '复制命令',
       cancelText: '关闭',
-      success: (res) => {
-        if (res.confirm) {
+      confirmColor: '#9c3a2a',
+      success: (r) => {
+        if (r.confirm) {
           wx.setClipboardData({
-            data: installCommands.command,
-            success: () => {
-              wx.showToast({
-                title: '已复制，去终端粘贴',
-                icon: 'success'
-              })
-            }
+            data: command,
+            success: () => wx.showToast({ title: '已 复 制', icon: 'none' })
           })
         }
       }
     })
   },
 
-  // 生成安装指令
-  generateInstallCommand(skill) {
-    // SkillHub 安装命令
-    const command = `skillhub install ${skill.techName}`
-
-    // 详细指南
-    const guide = `【第一步】安装 SkillHub（如果还没安装）\n在终端运行：\nnpm install -g @skillhub/skills\n\n【第二步】安装此技能\n在终端运行：\n\n${command}\n\n或者在 OpenClaw/Claude Code 中输入上述命令即可。`
-
-    return { command, guide }
-  },
-
-  // 分享
   onShareAppMessage() {
-    const { skill } = this.data
-    return {
-      title: `${skill.name} - 合一 Skills`,
-      path: `/pages/detail/detail?code=${skill.code}`,
-      imageUrl: ''
-    }
+    const s = this.data.skill
+    return { title: `${s.name} · 合一 Skills`, path: `/pages/detail/detail?code=${s.code}` }
   }
 })

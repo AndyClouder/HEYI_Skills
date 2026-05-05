@@ -1,96 +1,56 @@
-<!-- 合一 Skills - 技能列表页 -->
+<!-- 技能列表 · 按门 -->
 <view class="page">
-  <!-- 宣纸纹理背景 -->
   <view class="page-bg"></view>
 
   <view class="container">
 
+    <!-- 门牌大字 -->
+    <view class="gate-banner" wx:if="{{currentGate}}">
+      <view class="gb-num f-italic">{{gateInfo.roman}}</view>
+      <view class="gb-big">{{currentGate}}</view>
+      <view class="gb-en f-italic">{{gateInfo.en}}</view>
+      <view class="gb-desc">{{gateInfo.desc}}</view>
+      <view class="gb-count f-mono">{{filteredSkills.length}} skills</view>
+    </view>
+
     <!-- 六门筛选 -->
-    <scroll-view class="gates-filter" scroll-x show-scrollbar="{{false}}">
-      <view class="filter-chips">
-        <view
-          class="chip {{currentGate === '' ? 'active' : ''}}"
-          bindtap="onGateFilter"
-          data-gate="">
-          全部 <text class="count">{{total}}</text>
+    <scroll-view class="filter-scroll" scroll-x show-scrollbar="{{false}}">
+      <view class="filter-row">
+        <view class="f-chip {{!currentGate ? 'on' : ''}}" bindtap="onGateFilter" data-gate="">
+          全 · <text class="f-chip-n f-mono">{{total}}</text>
         </view>
-        <view
-          class="chip {{currentGate === item.id ? 'active' : ''}}"
-          wx:for="{{gates}}"
-          wx:key="id"
-          bindtap="onGateFilter"
-          data-gate="{{item.id}}">
-          {{item.id}} <text class="count">{{item.count}}</text>
+        <view class="f-chip {{currentGate === item.id ? 'on' : ''}}"
+              wx:for="{{gates}}" wx:key="id"
+              bindtap="onGateFilter" data-gate="{{item.id}}">
+          {{item.id}} · <text class="f-chip-n f-mono">{{item.count}}</text>
         </view>
       </view>
     </scroll-view>
 
-    <!-- 搜索框 -->
-    <view class="search-row" wx:if="{{mode === 'search'}}">
-      <view class="search-input-wrapper">
-        <input
-          class="search-input"
-          placeholder="搜索技能"
-          value="{{keyword}}"
-          bindinput="onSearchInput"
-          confirm-type="search"
-          bindconfirm="onSearchConfirm"
-          focus="{{searchFocus}}" />
-        <text class="search-clear" wx:if="{{keyword}}" bindtap="onSearchClear">×</text>
-      </view>
-    </view>
-
-    <!-- 当前分类标题 -->
-    <view class="gate-header" wx:if="{{currentGate && !keyword}}">
-      <view class="gate-big">{{currentGate}}</view>
-      <view class="gate-info">
-        <text class="gate-title">{{gateInfo.en}}</text>
-        <text class="gate-desc">{{gateInfo.desc}}</text>
-      </view>
-    </view>
-
-    <!-- 搜索结果提示 -->
-    <view class="search-result" wx:if="{{keyword && filteredSkills.length > 0}}">
-      找到 <text class="highlight">{{filteredSkills.length}}</text> 个相关技能
-    </view>
-
     <!-- 空状态 -->
-    <view class="empty-state" wx:if="{{filteredSkills.length === 0}}">
-      <view class="empty-icon">🍃</view>
-      <text class="empty-text">没有找到相关技能</text>
-      <text class="empty-hint">换个关键词试试</text>
+    <view class="empty" wx:if="{{filteredSkills.length === 0 && !loading}}">
+      <view class="empty-ico f-italic">∅</view>
+      <view class="empty-t">未见此门之技</view>
     </view>
 
     <!-- 技能列表 -->
-    <view class="skills-grid" wx:if="{{filteredSkills.length > 0}}">
-      <view
-        class="skill-card"
-        wx:for="{{filteredSkills}}"
-        wx:key="code"
-        bindtap="onSkillTap"
-        data-code="{{item.code}}">
-
-        <!-- 卡片头部 -->
-        <view class="card-head">
-          <view class="skill-num">{{item.no}}</view>
-          <view class="skill-meta">
-            <view class="gate-badge">{{item.gate}}</view>
-            <text class="skill-code">{{item.code}}</text>
+    <view class="skill-list">
+      <view class="sk" wx:for="{{filteredSkills}}" wx:key="code"
+            bindtap="onSkillTap" data-code="{{item.code}}">
+        <view class="sk-head">
+          <view class="sk-no f-italic">{{item.no}}</view>
+          <view class="sk-meta">
+            <view class="gate-chip">{{item.gate}}</view>
+            <text class="sk-code f-mono">{{item.code}}</text>
           </view>
         </view>
-
-        <!-- 卡片内容 -->
-        <view class="card-body">
-          <view class="skill-name">{{item.name}}</view>
-          <view class="skill-desc">{{item.desc}}</view>
-        </view>
-
-        <!-- 卡片底部 -->
-        <view class="card-foot">
-          <view class="skill-source {{item.source}}">{{sourceLabels[item.source]}}</view>
-          <view class="skill-rating">
-            <text wx:for="{{item.rating}}" wx:for-item="star" wx:key="*">★</text>
+        <view class="sk-name">{{item.name}}</view>
+        <view class="sk-desc">{{item.desc}}</view>
+        <view class="sk-foot">
+          <view class="sk-rating t-cinnabar">
+            <text wx:for="{{item.rating}}" wx:for-item="s" wx:key="*">★</text>
           </view>
+          <view class="sk-install f-mono" wx:if="{{item.installs}}">{{item.installs}} 装</view>
         </view>
       </view>
     </view>

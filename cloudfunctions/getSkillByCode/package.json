@@ -1,7 +1,7 @@
 {
-  "name": "initSkills",
+  "name": "getSkillByCode",
   "version": "1.0.0",
-  "description": "初始化技能数据云函数",
+  "description": "根据 code 获取技能详情云函数",
   "main": "index.js",
   "dependencies": {
     "wx-server-sdk": "~2.6.3"

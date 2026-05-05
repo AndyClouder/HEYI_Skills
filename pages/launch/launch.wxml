@@ -1,0 +1,22 @@
+<!-- 启动页 -->
+<view class="launch">
+  <view class="launch-bg"></view>
+
+  <view class="launch-center">
+    <!-- 太极圆相 -->
+    <view class="taiji">
+      <view class="taiji-ring"></view>
+      <view class="taiji-dot"></view>
+    </view>
+
+    <view class="launch-char">合 一</view>
+    <view class="launch-en">H E Y I</view>
+    <view class="launch-tag">非技术人的 AI 技能库</view>
+  </view>
+
+  <view class="launch-foot">
+    <text class="f-italic">thirty skills · six gates</text>
+    <view class="foot-line"></view>
+    <text class="f-mono">V 0.1</text>
+  </view>
+</view>

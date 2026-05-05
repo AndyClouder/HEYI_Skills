@@ -1,0 +1,73 @@
+<!-- 搜索页 -->
+<view class="page">
+  <view class="page-bg"></view>
+
+  <view class="container">
+
+    <!-- 搜索栏 -->
+    <view class="searchbar">
+      <input class="sb-input" placeholder="搜索技能、门类、关键词"
+             placeholder-class="sb-ph"
+             value="{{keyword}}"
+             bindinput="onInput"
+             confirm-type="search"
+             bindconfirm="onConfirm"
+             focus="{{true}}" />
+      <view class="sb-clear" wx:if="{{keyword}}" bindtap="onClear">×</view>
+    </view>
+
+    <!-- 热门关键词 -->
+    <view class="section" wx:if="{{!keyword}}">
+      <view class="sec-eyebrow f-italic">popular</view>
+      <view class="sec-title">常 被 问 起</view>
+      <view class="tag-cloud">
+        <view class="tag" wx:for="{{suggestions}}" wx:key="*"
+              bindtap="onTag" data-k="{{item}}">{{item}}</view>
+      </view>
+    </view>
+
+    <!-- 最近搜索 -->
+    <view class="section" wx:if="{{!keyword && recent.length > 0}}">
+      <view class="sec-eyebrow-row">
+        <view class="sec-eyebrow f-italic">recent</view>
+        <view class="sec-clear" bindtap="clearRecent">清空</view>
+      </view>
+      <view class="sec-title">曾 经 搜 过</view>
+      <view class="tag-cloud">
+        <view class="tag tag-recent" wx:for="{{recent}}" wx:key="*"
+              bindtap="onTag" data-k="{{item}}">{{item}}</view>
+      </view>
+    </view>
+
+    <!-- 搜索结果 -->
+    <view class="results" wx:if="{{keyword}}">
+      <view class="res-head">
+        <text class="res-count t-cinnabar f-mono">{{results.length}}</text>
+        <text class="res-label"> 个结果</text>
+      </view>
+
+      <view class="empty" wx:if="{{results.length === 0}}">
+        <view class="empty-ico f-italic">∅</view>
+        <view class="empty-t">未见其踪</view>
+        <view class="empty-d">换个说法试试</view>
+      </view>
+
+      <view class="res-list">
+        <view class="res-item" wx:for="{{results}}" wx:key="code"
+              bindtap="onTap" data-code="{{item.code}}">
+          <view class="res-meta">
+            <view class="gate-chip">{{item.gate}}</view>
+            <text class="res-no f-italic">{{item.no}}</text>
+          </view>
+          <view class="res-name">
+            <block wx:for="{{item._nameParts}}" wx:for-item="p" wx:key="*">
+              <text class="{{p.hit ? 't-cinnabar' : ''}}">{{p.text}}</text>
+            </block>
+          </view>
+          <view class="res-desc">{{item.desc}}</view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</view>

@@ -1,4 +1,5 @@
 {
-  "usingComponents": {},
-  "navigationBarTitleText": "合一 Skills"
+  "navigationBarTitleText": "合一",
+  "backgroundColor": "#f5f1e8",
+  "enablePullDownRefresh": false
 }
