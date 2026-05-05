@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>案例详情 - 学员案例库</title>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --text-light: #9CA3AF;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --bg-tertiary: #F3F4F6;
+            --border-color: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* === 导航栏 === */
+        .navbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .navbar-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .navbar-search {
+            position: relative;
+        }
+
+        .navbar-search input {
+            width: 280px;
+            padding: 8px 12px 8px 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+        }
+
+        .navbar-search input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--bg-primary);
+        }
+
+        .navbar-search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        .navbar-nav a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .navbar-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .navbar-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .navbar-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .navbar-btn.primary:hover {
+            background: var(--primary-hover);
+        }
+
+        /* === 主容器 === */
+        .container {
+            max-width: 1200px;
+            margin: 80px auto 40px;
+            padding: 0 24px;
+        }
+
+        /* === 面包屑 === */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--primary-color);
+        }
+
+        .breadcrumb span {
+            color: var(--text-light);
+        }
+
+        /* === 返回按钮 === */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .back-btn:hover {
+            color: var(--primary-color);
+        }
+
+        /* === 主内容布局 === */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 32px;
+        }
+
+        /* === 左侧内容区 === */
+        .content-area {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        /* === 封面图 === */
+        .cover-image {
+            width: 100%;
+            height: 360px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 64px;
+            position: relative;
+        }
+
+        .cover-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            font-size: 13px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cover-badge.featured {
+            background: linear-gradient(135deg, #F59E0B, #EF4444);
+        }
+
+        /* === 内容主体 === */
+        .content-body {
+            padding: 32px;
+        }
+
+        .case-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .case-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .meta-item .icon {
+            color: var(--text-light);
+        }
+
+        .meta-item .value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .author-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .author-details {
+            flex: 1;
+        }
+
+        .author-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .author-time {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .author-follow {
+            padding: 6px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-primary);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .author-follow:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* === 标签 === */
+        .tags-section {
+            margin-bottom: 24px;
+        }
+
+        .tags-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 6px 14px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .tag:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary-color);
+        }
+
+        /* === 描述 === */
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .case-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 32px;
+        }
+
+        /* === 截图预览 === */
+        .screenshots {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .screenshot-item {
+            aspect-ratio: 16/10;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .screenshot-item::after {
+            content: '🔍';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .screenshot-item:hover::after {
+            opacity: 1;
+        }
+
+        /* === 导入指引 === */
+        .import-guide {
+            background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .import-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .import-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .import-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .import-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .import-steps {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+
+        .import-step {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .import-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .code-block {
+            background: var(--text-primary);
+            color: #10B981;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            margin-top: 8px;
+            overflow-x: auto;
+        }
+
+        /* === 评论区 === */
+        .comments-section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 32px;
+        }
+
+        .comment-input-area {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .comment-input-area .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .comment-input-wrapper {
+            flex: 1;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            resize: none;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .comment-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .comment-submit {
+            padding: 8px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .comment-submit:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .comment-item {
+            display: flex;
+            gap: 12px;
+        }
+
+        .comment-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .comment-author {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .comment-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .comment-footer {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .comment-action {
+            font-size: 13px;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .comment-action:hover {
+            color: var(--text-secondary);
+        }
+
+        /* === 右侧边栏 === */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .sidebar-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        /* === 下载卡片 === */
+        .download-card {
+            text-align: center;
+        }
+
+        .download-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--success-color);
+            margin-bottom: 8px;
+        }
+
+        .download-price span {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .download-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .download-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .download-info-item {
+            text-align: center;
+        }
+
+        .download-info-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .download-info-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* === 统计数据 === */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        /* === 操作按钮 === */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: white;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .action-btn.active {
+            background: #EEF2FF;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* === 作者信息卡片 === */
+        .author-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .author-card .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .author-card-info {
+            flex: 1;
+        }
+
+        .author-card-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .author-card-stats {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        /* === 相关推荐 === */
+        .related-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .related-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .related-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .related-cover {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            flex-shrink: 0;
+        }
+
+        .related-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .related-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .related-meta {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* === 浮动操作栏 === */
+        .floating-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border-color);
+            padding: 12px 24px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 99;
+        }
+
+        /* === 响应式 === */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                order: -1;
+            }
+
+            .action-buttons {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .download-card {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-search {
+                display: none;
+            }
+
+            .container {
+                padding: 0 16px;
+            }
+
+            .content-body {
+                padding: 20px;
+            }
+
+            .screenshots {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .floating-bar {
+                display: flex;
+            }
+
+            .sidebar-card.download-card {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="navbar-logo">学员案例库</a>
+            <div class="navbar-search">
+                <span class="navbar-search-icon">🔍</span>
+                <input type="text" placeholder="搜索案例...">
+            </div>
+        </div>
+        <div class="navbar-nav">
+            <a href="/">首页</a>
+            <a href="/explore">案例广场</a>
+            <a href="/help">帮助中心</a>
+        </div>
+        <div class="navbar-user">
+            <a href="/upload" class="navbar-btn primary">上传案例</a>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 面包屑 -->
+        <div class="breadcrumb">
+            <a href="/">首页</a>
+            <span>›</span>
+            <a href="/explore">案例广场</a>
+            <span>›</span>
+            <span>AI写作助手模板</span>
+        </div>
+
+        <!-- 返回按钮 -->
+        <a href="/explore" class="back-btn">← 返回案例列表</a>
+
+        <!-- 主布局 -->
+        <div class="main-layout">
+            <!-- 左侧内容区 -->
+            <div class="content-area">
+                <!-- 封面图 -->
+                <div class="cover-image">
+                    <div class="cover-badge featured">⭐ 精选案例</div>
+                    <span>📝</span>
+                </div>
+
+                <!-- 内容主体 -->
+                <div class="content-body">
+                    <!-- 标题 -->
+                    <h1 class="case-title">AI写作助手 - 文章生成与优化模板</h1>
+
+                    <!-- 元信息 -->
+                    <div class="case-meta">
+                        <div class="meta-item">
+                            <span class="icon">📁</span>
+                            <span class="value">Claude Code 格式</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="icon">📅</span>
+                            <span class="value">2024-03-15 发布</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="icon">📊</span>
+                            <span class="value">2.5 MB</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="icon">🔄</span>
+                            <span class="value">v1.2.0</span>
+                        </div>
+                    </div>
+
+                    <!-- 作者信息 -->
+                    <div class="author-info">
+                        <div class="author-avatar">张</div>
+                        <div class="author-details">
+                            <div class="author-name">张三</div>
+                            <div class="author-time">发布于 2024年3月15日 14:30</div>
+                        </div>
+                        <button class="author-follow">+ 关注</button>
+                    </div>
+
+                    <!-- 标签 -->
+                    <div class="tags-section">
+                        <div class="tags-label">分类标签</div>
+                        <div class="tags-list">
+                            <a href="#" class="tag">写作助手</a>
+                            <a href="#" class="tag">AI辅助</a>
+                            <a href="#" class="tag">模板</a>
+                        </div>
+                    </div>
+
+                    <!-- 描述 -->
+                    <h3 class="section-title">📖 案例介绍</h3>
+                    <div class="case-description">
+                        <p>这是一个强大的AI写作助手模板，可以帮助你快速生成各类文章内容。支持多种写作风格，包括新闻报道、技术文档、营销文案等。内置智能优化功能，可以自动改进文章结构和语言表达。</p>
+                        <br>
+                        <p><strong>主要功能：</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 8px;">
+                            <li>多风格文章生成（新闻报道、技术文档、营销文案等）</li>
+                            <li>智能段落优化和语言润色</li>
+                            <li>关键词密度分析和SEO优化建议</li>
+                            <li>支持中英文双语写作</li>
+                            <li>导出为Markdown、Word、PDF格式</li>
+                        </ul>
+                    </div>
+
+                    <!-- 截图预览 -->
+                    <h3 class="section-title">🖼️ 功能截图</h3>
+                    <div class="screenshots">
+                        <div class="screenshot-item" style="background: linear-gradient(135deg, #EEF2FF, #E0E7FF); display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 48px;">📄</span>
+                        </div>
+                        <div class="screenshot-item" style="background: linear-gradient(135deg, #ECFDF5, #D1FAE5); display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 48px;">✨</span>
+                        </div>
+                    </div>
+
+                    <!-- 导入指引 -->
+                    <div class="import-guide">
+                        <div class="import-header">
+                            <div class="import-icon">📥</div>
+                            <div>
+                                <div class="import-title">导入指引</div>
+                                <div class="import-subtitle">将此案例导入到 Claude Code</div>
+                            </div>
+                        </div>
+                        <div class="import-steps">
+                            <div class="import-step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <div class="step-title">下载技能包</div>
+                                    <div class="step-desc">点击右侧下载按钮，获取ZIP格式的技能包文件</div>
+                                </div>
+                            </div>
+                            <div class="import-step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <div class="step-title">解压文件</div>
+                                    <div class="step-desc">将下载的ZIP文件解压到本地目录</div>
+                                </div>
+                            </div>
+                            <div class="import-step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <div class="step-title">复制到技能目录</div>
+                                    <div class="step-desc">将解压后的文件夹复制到 Claude Code 的 skills 目录</div>
+                                    <div class="code-block">~/.claude/skills/ai-writing-assistant/</div>
+                                </div>
+                            </div>
+                            <div class="import-step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <div class="step-title">重启并使用</div>
+                                    <div class="step-desc">重启 Claude Code，在对话中引用该技能即可使用</div>
+                                    <div class="code-block">请使用 ai-writing-assistant 帮我写一篇文章</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 评论区 -->
+                    <div class="comments-section">
+                        <h3 class="section-title">💬 评论 (12)</h3>
+
+                        <div class="comment-input-area">
+                            <div class="avatar">我</div>
+                            <div class="comment-input-wrapper">
+                                <textarea class="comment-textarea" placeholder="写下你的评论..."></textarea>
+                                <div class="comment-actions">
+                                    <button class="comment-submit" disabled>发表评论</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="comment-list">
+                            <div class="comment-item">
+                                <div class="comment-avatar" style="background: #F59E0B;">李</div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <span class="comment-author">李四</span>
+                                        <span class="comment-time">2天前</span>
+                                    </div>
+                                    <div class="comment-text">这个模板太棒了！大大提高了我的写作效率，特别是SEO优化功能很实用。</div>
+                                    <div class="comment-footer">
+                                        <span class="comment-action">👍 24</span>
+                                        <span class="comment-action">回复</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comment-item">
+                                <div class="comment-avatar" style="background: #10B981;">王</div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <span class="comment-author">王五</span>
+                                        <span class="comment-time">5天前</span>
+                                    </div>
+                                    <div class="comment-text">请问支持自定义写作风格吗？我想训练一个符合公司文风的模板。</div>
+                                    <div class="comment-footer">
+                                        <span class="comment-action">👍 8</span>
+                                        <span class="comment-action">回复</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧边栏 -->
+            <div class="sidebar">
+                <!-- 下载卡片 -->
+                <div class="sidebar-card download-card">
+                    <div class="download-price">免费<span>下载</span></div>
+                    <button class="download-btn">
+                        <span>📥</span> 立即下载
+                    </button>
+                    <div class="download-info">
+                        <div class="download-info-item">
+                            <div class="download-info-value">1,234</div>
+                            <div class="download-info-label">下载量</div>
+                        </div>
+                        <div class="download-info-item">
+                            <div class="download-info-value">89</div>
+                            <div class="download-info-label">收藏</div>
+                        </div>
+                        <div class="download-info-item">
+                            <div class="download-info-value">156</div>
+                            <div class="download-info-label">点赞</div>
+                        </div>
+                        <div class="download-info-item">
+                            <div class="download-info-value">4.8</div>
+                            <div class="download-info-label">评分</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="action-buttons">
+                    <button class="action-btn">
+                        <span>⭐</span> 收藏
+                    </button>
+                    <button class="action-btn">
+                        <span>👍</span> 点赞
+                    </button>
+                    <button class="action-btn">
+                        <span>🔗</span> 分享
+                    </button>
+                    <button class="action-btn">
+                        <span>⚠️</span> 举报
+                    </button>
+                </div>
+
+                <!-- 作者卡片 -->
+                <div class="sidebar-card">
+                    <div class="sidebar-title">作者信息</div>
+                    <div class="author-card">
+                        <div class="avatar">张</div>
+                        <div class="author-card-info">
+                            <div class="author-card-name">张三</div>
+                            <div class="author-card-stats">8个案例 · 1.2k下载量</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 相关推荐 -->
+                <div class="sidebar-card">
+                    <div class="sidebar-title">相关推荐</div>
+                    <div class="related-list">
+                        <div class="related-item">
+                            <div class="related-cover" style="background: linear-gradient(135deg, #FEE2E2, #FECACA);"></div>
+                            <div class="related-info">
+                                <div class="related-title">AI数据分析助手</div>
+                                <div class="related-meta">326下载 · 数据分析</div>
+                            </div>
+                        </div>
+                        <div class="related-item">
+                            <div class="related-cover" style="background: linear-gradient(135deg, #FEF3C7, #FDE68A);"></div>
+                            <div class="related-info">
+                                <div class="related-title">自动办公文档生成</div>
+                                <div class="related-meta">189下载 · 自动化</div>
+                            </div>
+                        </div>
+                        <div class="related-item">
+                            <div class="related-cover" style="background: linear-gradient(135deg, #E0E7FF, #C7D2FE);"></div>
+                            <div class="related-info">
+                                <div class="related-title">代码审查助手</div>
+                                <div class="related-meta">456下载 · 开发工具</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 浮动操作栏 (移动端) -->
+    <div class="floating-bar">
+        <div style="display: flex; gap: 8px;">
+            <button class="action-btn" style="padding: 8px 16px;">
+                <span>⭐</span> 收藏
+            </button>
+            <button class="action-btn" style="padding: 8px 16px;">
+                <span>👍</span> 点赞
+            </button>
+        </div>
+        <button class="download-btn" style="padding: 10px 24px; font-size: 14px;">
+            📥 下载
+        </button>
+    </div>
+
+    <script>
+        // 收藏按钮交互
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // 关注按钮交互
+        document.querySelectorAll('.author-follow').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.textContent === '+ 关注') {
+                    this.textContent = '✓ 已关注';
+                    this.style.background = 'var(--primary-color)';
+                    this.style.color = 'white';
+                    this.style.borderColor = 'var(--primary-color)';
+                } else {
+                    this.textContent = '+ 关注';
+                    this.style.background = '';
+                    this.style.color = '';
+                    this.style.borderColor = '';
+                }
+            });
+        });
+
+        // 评论输入验证
+        const commentTextarea = document.querySelector('.comment-textarea');
+        const commentSubmit = document.querySelector('.comment-submit');
+
+        commentTextarea.addEventListener('input', function() {
+            commentSubmit.disabled = this.value.trim().length === 0;
+        });
+    </script>
+</body>
+</html>

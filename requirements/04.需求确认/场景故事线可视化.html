@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>场景故事线可视化 - 学员案例库系统</title>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --secondary-color: #8B5CF6;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --danger-color: #EF4444;
+            --info-color: #3B82F6;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --text-light: #9CA3AF;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --bg-tertiary: #F3F4F6;
+            --border-color: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* === 导航栏 === */
+        .navbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .navbar-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-back {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar-back:hover {
+            color: var(--primary-color);
+        }
+
+        /* === 主容器 === */
+        .main-container {
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* === 左侧场景列表 === */
+        .sidebar {
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0;
+            overflow-y: auto;
+            max-height: calc(100vh - 60px);
+        }
+
+        .sidebar-header {
+            padding: 0 20px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .sidebar-search {
+            position: relative;
+        }
+
+        .sidebar-search input {
+            width: 100%;
+            padding: 8px 12px 8px 36px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .sidebar-search input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .sidebar-search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 12px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .filter-tab {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            border-radius: 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-tab:hover {
+            background: var(--bg-secondary);
+        }
+
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .scenario-list {
+            padding: 12px;
+        }
+
+        .scenario-group {
+            margin-bottom: 16px;
+        }
+
+        .scenario-group-title {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            padding-left: 12px;
+        }
+
+        .scenario-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .scenario-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .scenario-item.active {
+            background: rgba(79, 70, 229, 0.1);
+            border: 1px solid var(--primary-color);
+        }
+
+        .scenario-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .scenario-icon.upload {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary-color);
+        }
+
+        .scenario-icon.review {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .scenario-icon.browse {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .scenario-icon.manage {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .scenario-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .scenario-name {
+            font-size: 14px;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .scenario-tags {
+            display: flex;
+            gap: 4px;
+            margin-top: 2px;
+        }
+
+        .scenario-tag {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg-secondary);
+            color: var(--text-light);
+        }
+
+        .scenario-tag.hot {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .scenario-tag.new {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        /* === 右侧内容区 === */
+        .content-area {
+            padding: 24px;
+            overflow-y: auto;
+            max-height: calc(100vh - 60px);
+        }
+
+        .content-header {
+            margin-bottom: 24px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .scenario-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .scenario-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .scenario-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* === 故事线视图 === */
+        .storyline-view {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .storyline-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 32px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -31px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .timeline-item.success::before {
+            background: var(--success-color);
+            box-shadow: 0 0 0 2px var(--success-color);
+        }
+
+        .timeline-item.warning::before {
+            background: var(--warning-color);
+            box-shadow: 0 0 0 2px var(--warning-color);
+        }
+
+        .timeline-item.error::before {
+            background: var(--danger-color);
+            box-shadow: 0 0 0 2px var(--danger-color);
+        }
+
+        .timeline-item.pending::before {
+            background: var(--text-light);
+            box-shadow: 0 0 0 2px var(--text-light);
+        }
+
+        .timeline-node {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .timeline-node.success {
+            border-left-color: var(--success-color);
+        }
+
+        .timeline-node.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .timeline-node.error {
+            border-left-color: var(--danger-color);
+        }
+
+        .timeline-node.pending {
+            border-left-color: var(--text-light);
+        }
+
+        .node-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .node-role {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .role-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .role-avatar.tutor {
+            background: var(--warning-color);
+        }
+
+        .role-avatar.admin {
+            background: var(--danger-color);
+        }
+
+        .role-avatar.system {
+            background: var(--text-light);
+        }
+
+        .node-action {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .node-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .node-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .node-branch {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.05);
+            border-radius: var(--radius-md);
+            border-left: 2px solid var(--danger-color);
+        }
+
+        .branch-label {
+            font-size: 11px;
+            color: var(--danger-color);
+            margin-bottom: 4px;
+        }
+
+        .branch-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* === 视图切换 === */
+        .view-toggle {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 2px;
+            margin-bottom: 24px;
+            width: fit-content;
+        }
+
+        .view-btn {
+            padding: 6px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* === 泳道图视图 === */
+        .swimlane-view {
+            display: none;
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .swimlane-view.active {
+            display: block;
+        }
+
+        .swimlane {
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+
+        .swimlane-lane {
+            min-width: 200px;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .swimlane-lane:last-child {
+            border-right: none;
+        }
+
+        .lane-header {
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .lane-content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .lane-node {
+            padding: 12px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .lane-node.upload {
+            background: rgba(79, 70, 229, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .lane-node.review {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--warning-color);
+        }
+
+        .lane-node.success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success-color);
+        }
+
+        /* === 统计卡片 === */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* === 响应式 === */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar.active {
+                display: block;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                z-index: 50;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 16px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <span>📋</span>
+            <span>场景故事线可视化</span>
+        </div>
+        <a href="../README.md" class="navbar-back">
+            <span>←</span>
+            <span>返回文档</span>
+        </a>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 左侧场景列表 -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">业务场景列表</div>
+                <div class="sidebar-search">
+                    <span class="sidebar-search-icon">🔍</span>
+                    <input type="text" placeholder="搜索场景..." id="scenarioSearch">
+                </div>
+            </div>
+
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">全部</button>
+                <button class="filter-tab" data-filter="upload">上传审核</button>
+                <button class="filter-tab" data-filter="browse">浏览下载</button>
+                <button class="filter-tab" data-filter="manage">平台管理</button>
+            </div>
+
+            <div class="scenario-list" id="scenarioList">
+                <!-- 上传审核流程 -->
+                <div class="scenario-group" data-category="upload">
+                    <div class="scenario-group-title">📤 案例上传审核</div>
+                    <div class="scenario-item active" data-scenario="S001">
+                        <div class="scenario-icon upload">📤</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">案例正常发布场景</div>
+                            <div class="scenario-tags">
+                                <span class="scenario-tag hot">高频</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scenario-item" data-scenario="S002">
+                        <div class="scenario-icon upload">📝</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">案例审核驳回场景</div>
+                            <div class="scenario-tags">
+                                <span class="scenario-tag hot">高频</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scenario-item" data-scenario="S003">
+                        <div class="scenario-icon upload">🔒</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">敏感词自动拦截场景</div>
+                        </div>
+                    </div>
+                    <div class="scenario-item" data-scenario="S004">
+                        <div class="scenario-icon upload">↩️</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">用户主动撤回待审核案例</div>
+                        </div>
+                    </div>
+                    <div class="scenario-item" data-scenario="S007">
+                        <div class="scenario-icon upload">📦</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">批量上传案例场景</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 浏览下载流程 -->
+                <div class="scenario-group" data-category="browse">
+                    <div class="scenario-group-title">🔍 案例浏览下载</div>
+                    <div class="scenario-item" data-scenario="S008">
+                        <div class="scenario-icon browse">👀</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">用户浏览搜索案例场景</div>
+                            <div class="scenario-tags">
+                                <span class="scenario-tag hot">高频</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scenario-item" data-scenario="S009">
+                        <div class="scenario-icon browse">📥</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">用户下载案例场景</div>
+                            <div class="scenario-tags">
+                                <span class="scenario-tag hot">高频</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scenario-item" data-scenario="S010">
+                        <div class="scenario-icon browse">⭐</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">用户收藏点赞案例场景</div>
+                        </div>
+                    </div>
+                    <div class="scenario-item" data-scenario="S011">
+                        <div class="scenario-icon browse">👤</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">匿名访客浏览受限场景</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 平台管理流程 -->
+                <div class="scenario-group" data-category="manage">
+                    <div class="scenario-group-title">⚙️ 平台管理</div>
+                    <div class="scenario-item" data-scenario="S005">
+                        <div class="scenario-icon manage">🔴</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">管理员强制下架已发布案例</div>
+                        </div>
+                    </div>
+                    <div class="scenario-item" data-scenario="S012">
+                        <div class="scenario-icon manage">🚨</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">案例举报处理场景</div>
+                        </div>
+                    </div>
+                    <div class="scenario-item" data-scenario="S013">
+                        <div class="scenario-icon manage">🏷️</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">分类标签管理场景</div>
+                        </div>
+                    </div>
+                    <div class="scenario-item" data-scenario="S014">
+                        <div class="scenario-icon manage">📊</div>
+                        <div class="scenario-info">
+                            <div class="scenario-name">数据统计查看场景</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 右侧内容区 -->
+        <main class="content-area" id="contentArea">
+            <!-- 统计卡片 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">总场景数</div>
+                    <div class="stat-value">17</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">高频场景</div>
+                    <div class="stat-value">5</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">涉及角色</div>
+                    <div class="stat-value">5</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">平均节点数</div>
+                    <div class="stat-value">6</div>
+                </div>
+            </div>
+
+            <!-- 内容头部 -->
+            <div class="content-header">
+                <div class="breadcrumb">
+                    <span>场景列表</span>
+                    <span>›</span>
+                    <span>上传审核</span>
+                    <span>›</span>
+                    <span id="currentScenario">案例正常发布场景</span>
+                </div>
+                <h1 class="scenario-title" id="scenarioTitle">案例正常发布场景</h1>
+                <div class="scenario-meta">
+                    <div class="scenario-meta-item">
+                        <span>📋</span>
+                        <span id="scenarioCode">S001</span>
+                    </div>
+                    <div class="scenario-meta-item">
+                        <span>⚡</span>
+                        <span>高频场景</span>
+                    </div>
+                    <div class="scenario-meta-item">
+                        <span>👥</span>
+                        <span>3个角色参与</span>
+                    </div>
+                    <div class="scenario-meta-item">
+                        <span>⏱️</span>
+                        <span>预计72小时</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 视图切换 -->
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="storyline">📖 故事线视图</button>
+                <button class="view-btn" data-view="swimlane">🏊 泳道图视图</button>
+            </div>
+
+            <!-- 故事线视图 -->
+            <div class="storyline-view active" id="storylineView">
+                <div class="storyline-title">📖 业务故事线</div>
+                <div class="timeline" id="timelineContent">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 泳道图视图 -->
+            <div class="swimlane-view" id="swimlaneView">
+                <div class="storyline-title">🏊 角色泳道图</div>
+                <div class="swimlane" id="swimlaneContent">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // === 场景数据定义 ===
+        const scenarios = {
+            'S001': {
+                name: '案例正常发布场景',
+                code: 'S001',
+                category: 'upload',
+                icon: '📤',
+                tags: ['hot', 'normal'],
+                roles: ['学员上传者', '导师/管理员', '系统'],
+                duration: '72小时',
+                nodes: [
+                    { role: '学员上传者', action: '填写案例信息', title: '提交案例', desc: '填写标题、描述、标签，上传技能包ZIP文件', type: 'success' },
+                    { role: '系统', action: '自动校验', title: '格式校验', desc: '系统自动校验文件格式、大小、必填项', type: 'success' },
+                    { role: '学员上传者', action: '确认提交', title: '提交审核', desc: '确认信息无误后提交审核，案例状态变为"待审核"', type: 'success' },
+                    { role: '导师/管理员', action: '审核案例', title: '内容审核', desc: '导师查看案例详情、下载技能包，审核内容质量和完整性', type: 'warning' },
+                    { role: '导师/管理员', action: '提交结果', title: '审核通过', desc: '审核通过后触发安全校验', type: 'success' },
+                    { role: '系统', action: '自动发布', title: '案例发布', desc: '安全校验通过后自动发布，案例状态变为"已发布"', type: 'success' },
+                    { role: '浏览用户', action: '浏览下载', title: '用户获取', desc: '用户可浏览、搜索、下载案例，并获取导入指引', type: 'success' }
+                ]
+            },
+            'S002': {
+                name: '案例审核驳回场景',
+                code: 'S002',
+                category: 'upload',
+                icon: '📝',
+                tags: ['hot', 'exception'],
+                roles: ['学员上传者', '导师/管理员'],
+                duration: '预计48小时',
+                nodes: [
+                    { role: '学员上传者', action: '提交案例', title: '提交案例', desc: '填写案例信息并上传技能包', type: 'success' },
+                    { role: '导师/管理员', action: '审核案例', title: '审核驳回', desc: '导师审核发现质量问题（描述不清、文件不完整等）', type: 'error' },
+                    { role: '导师/管理员', action: '填写意见', title: '填写驳回原因', desc: '必须填写驳回原因，便于用户修改', type: 'warning' },
+                    { role: '系统', action: '发送通知', title: '通知用户', desc: '系统发送驳回通知给用户', type: 'pending' },
+                    { role: '学员上传者', action: '修改案例', title: '修改后重新提交', desc: '用户根据驳回原因修改案例，重新提交审核', type: 'success' },
+                    { role: '导师/管理员', action: '再次审核', title: '审核通过', desc: '再次审核通过后发布', type: 'success' }
+                ],
+                branch: '驳回后修改路径'
+            },
+            'S003': {
+                name: '敏感词自动拦截场景',
+                code: 'S003',
+                category: 'upload',
+                icon: '🔒',
+                tags: ['exception', 'system'],
+                roles: ['学员上传者', '系统'],
+                duration: '实时',
+                nodes: [
+                    { role: '学员上传者', action: '填写案例', title: '填写案例信息', desc: '用户在填写案例描述时', type: 'success' },
+                    { role: '系统', action: '实时检测', title: '敏感词检测', desc: '系统实时检测到敏感词汇', type: 'error' },
+                    { role: '系统', action: '自动拦截', title: '自动驳回', desc: '系统自动驳回提交，提示用户修改敏感内容', type: 'error' }
+                ],
+                branch: '安全拦截路径'
+            },
+            'S004': {
+                name: '用户主动撤回待审核案例',
+                code: 'S004',
+                category: 'upload',
+                icon: '↩️',
+                tags: ['exception'],
+                roles: ['学员上传者'],
+                duration: '即时',
+                nodes: [
+                    { role: '学员上传者', action: '提交案例', title: '提交审核', desc: '案例提交后状态变为"待审核"', type: 'success' },
+                    { role: '学员上传者', action: '发现错误', title: '发现问题', desc: '用户提交后发现信息有误，需要修改', type: 'warning' },
+                    { role: '学员上传者', action: '撤回提交', title: '撤回审核', desc: '用户主动撤回审核，案例状态变回"草稿"', type: 'warning' },
+                    { role: '学员上传者', action: '修改案例', title: '重新编辑', desc: '用户修改案例信息后可重新提交', type: 'success' }
+                ]
+            },
+            'S008': {
+                name: '用户浏览搜索案例场景',
+                code: 'S008',
+                category: 'browse',
+                icon: '👀',
+                tags: ['hot', 'normal'],
+                roles: ['浏览用户', '访客'],
+                duration: '即时',
+                nodes: [
+                    { role: '浏览用户', action: '访问平台', title: '访问平台', desc: '用户打开案例库平台', type: 'success' },
+                    { role: '浏览用户', action: '搜索案例', title: '搜索/筛选', desc: '用户通过关键词搜索或按标签筛选案例', type: 'success' },
+                    { role: '浏览用户', action: '查看列表', title: '浏览案例列表', desc: '系统展示符合条件的案例列表，支持排序和分页', type: 'success' },
+                    { role: '浏览用户', action: '查看详情', title: '查看案例详情', desc: '点击案例查看详情、截图、统计数据等', type: 'success' }
+                ]
+            },
+            'S009': {
+                name: '用户下载案例场景',
+                code: 'S009',
+                category: 'browse',
+                icon: '📥',
+                tags: ['hot', 'normal'],
+                roles: ['浏览用户', '访客'],
+                duration: '即时',
+                nodes: [
+                    { role: '访客', action: '浏览案例', title: '访客浏览', desc: '未登录用户可浏览案例列表和详情', type: 'pending' },
+                    { role: '访客', action: '尝试下载', title: '下载需登录', desc: '访客点击下载时提示需要登录', type: 'warning' },
+                    { role: '浏览用户', action: '登录下载', title: '登录后下载', desc: '登录用户可下载技能包到本地', type: 'success' },
+                    { role: '系统', action: '记录统计', title: '更新下载量', desc: '系统记录下载量，更新案例统计数据', type: 'success' },
+                    { role: '浏览用户', action: '获取指引', title: '获取导入指引', desc: '系统提供OpenClaw/Claude Code导入操作说明', type: 'success' }
+                ],
+                branch: '访客转登录路径'
+            },
+            'S010': {
+                name: '用户收藏点赞案例场景',
+                code: 'S010',
+                category: 'browse',
+                icon: '⭐',
+                tags: ['normal'],
+                roles: ['浏览用户'],
+                duration: '即时',
+                nodes: [
+                    { role: '浏览用户', action: '查看案例', title: '浏览案例详情', desc: '用户查看感兴趣的案例', type: 'success' },
+                    { role: '浏览用户', action: '点击收藏', title: '收藏案例', desc: '点击收藏按钮，案例加入收藏列表', type: 'success' },
+                    { role: '系统', action: '更新统计', title: '更新收藏数', desc: '系统更新案例收藏数统计', type: 'success' },
+                    { role: '浏览用户', action: '点击点赞', title: '点赞案例', desc: '点击点赞按钮表达认可', type: 'success' },
+                    { role: '系统', action: '更新统计', title: '更新点赞数', desc: '系统更新案例点赞数统计', type: 'success' }
+                ]
+            },
+            'S005': {
+                name: '管理员强制下架已发布案例',
+                code: 'S005',
+                category: 'manage',
+                icon: '🔴',
+                tags: ['exception', 'admin'],
+                roles: ['管理员', '系统'],
+                duration: '即时',
+                nodes: [
+                    { role: '管理员', action: '发现问题', title: '发现问题案例', desc: '管理员发现已发布案例存在违规内容', type: 'error' },
+                    { role: '管理员', action: '执行下架', title: '强制下架', desc: '管理员执行强制下架操作', type: 'error' },
+                    { role: '管理员', action: '填写原因', title: '填写下架原因', desc: '必须填写下架原因并记录', type: 'warning' },
+                    { role: '系统', action: '更新状态', title: '更新案例状态', desc: '案例状态变为"已下架"，不再公开显示', type: 'error' },
+                    { role: '系统', action: '发送通知', title: '通知作者', desc: '系统发送下架通知给案例作者', type: 'pending' }
+                ]
+            },
+            'S012': {
+                name: '案例举报处理场景',
+                code: 'S012',
+                category: 'manage',
+                icon: '🚨',
+                tags: ['exception'],
+                roles: ['浏览用户', '导师/管理员'],
+                duration: '48小时',
+                nodes: [
+                    { role: '浏览用户', action: '发现违规', title: '发现违规内容', desc: '用户发现案例存在侵权或违规内容', type: 'error' },
+                    { role: '浏览用户', action: '提交举报', title: '提交举报', desc: '选择举报类型，填写举报原因提交', type: 'warning' },
+                    { role: '导师/管理员', action: '处理举报', title: '审核举报', desc: '管理员查看举报详情，核查案例内容', type: 'warning' },
+                    { role: '导师/管理员', action: '做出裁决', title: '裁决处理', desc: '确认违规则下架案例，举报不成立则忽略', type: 'error' },
+                    { role: '系统', action: '发送通知', title: '通知举报人', desc: '系统将处理结果通知举报人', type: 'success' }
+                ]
+            },
+            'S013': {
+                name: '分类标签管理场景',
+                code: 'S013',
+                category: 'manage',
+                icon: '🏷️',
+                tags: ['normal'],
+                roles: ['系统维护者'],
+                duration: '10分钟',
+                nodes: [
+                    { role: '系统维护者', action: '管理标签', title: '创建/编辑标签', desc: '创建新的分类标签或编辑现有标签信息', type: 'success' },
+                    { role: '系统维护者', action: '设置属性', title: '设置标签属性', desc: '设置标签名称、编码、图标、排序等', type: 'success' },
+                    { role: '系统维护者', action: '保存生效', title: '保存生效', desc: '保存后立即生效，用户可按新标签筛选', type: 'success' }
+                ]
+            },
+            'S014': {
+                name: '数据统计查看场景',
+                code: 'S014',
+                category: 'manage',
+                icon: '📊',
+                tags: ['normal'],
+                roles: ['管理层', '系统维护者'],
+                duration: '即时',
+                nodes: [
+                    { role: '管理层', action: '访问后台', title: '访问管理后台', desc: '管理层访问管理后台查看数据', type: 'success' },
+                    { role: '系统', action: '展示统计', title: '查看数据统计', desc: '展示案例总数、新增案例、下载量、活跃用户等统计', type: 'success' },
+                    { role: '管理层', action: '分析趋势', title: '分析趋势', desc: '查看趋势图表，分析平台运营状况', type: 'success' }
+                ]
+            }
+        };
+
+        // === 当前选中的场景 ===
+        let currentScenario = 'S001';
+
+        // === 渲染时间线 ===
+        function renderTimeline(scenarioId) {
+            const scenario = scenarios[scenarioId];
+            if (!scenario) return;
+
+            const timeline = document.getElementById('timelineContent');
+            timeline.innerHTML = scenario.nodes.map(node => `
+                <div class="timeline-item">
+                    <div class="timeline-node ${node.type}">
+                        <div class="node-header">
+                            <div class="node-role">
+                                <div class="role-avatar ${getRoleClass(node.role)}">${getRoleInitial(node.role)}</div>
+                                <span>${node.role}</span>
+                            </div>
+                            <div class="node-action">${node.action}</div>
+                        </div>
+                        <div class="node-title">${node.title}</div>
+                        <div class="node-desc">${node.desc}</div>
+                        ${node.type === 'error' ? `
+                            <div class="node-branch">
+                                <div class="branch-label">⚠️ 异常处理</div>
+                                <div class="branch-desc">此节点为异常路径，需要特别注意处理逻辑</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            // 更新头部信息
+            document.getElementById('scenarioTitle').textContent = scenario.name;
+            document.getElementById('scenarioCode').textContent = scenario.code;
+        }
+
+        // === 渲染泳道图 ===
+        function renderSwimlane(scenarioId) {
+            const scenario = scenarios[scenarioId];
+            if (!scenario) return;
+
+            // 按角色分组节点
+            const lanes = {};
+            scenario.nodes.forEach(node => {
+                if (!lanes[node.role]) {
+                    lanes[node.role] = [];
+                }
+                lanes[node.role].push(node);
+            });
+
+            const swimlane = document.getElementById('swimlaneContent');
+            swimlane.innerHTML = Object.keys(lanes).map(role => `
+                <div class="swimlane-lane">
+                    <div class="lane-header">${role}</div>
+                    <div class="lane-content">
+                        ${lanes[role].map(node => `
+                            <div class="lane-node ${getNodeType(node.type)}">
+                                <div style="font-weight:600;margin-bottom:4px;">${node.title}</div>
+                                <div style="color:var(--text-light);">${node.action}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getRoleClass(role) {
+            if (role.includes('上传者')) return 'user';
+            if (role.includes('导师') || role.includes('管理员')) return 'admin';
+            if (role.includes('系统')) return 'system';
+            return 'user';
+        }
+
+        function getRoleInitial(role) {
+            if (role.includes('上传者')) return '学';
+            if (role.includes('导师')) return '导';
+            if (role.includes('管理员')) return '管';
+            if (role.includes('系统')) return '系';
+            if (role.includes('用户') || role.includes('访客')) return '用';
+            return '?';
+        }
+
+        function getNodeType(type) {
+            if (type === 'success') return 'success';
+            if (type === 'warning') return 'review';
+            if (type === 'error') return 'review';
+            return 'upload';
+        }
+
+        // === 场景切换 ===
+        document.querySelectorAll('.scenario-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const scenarioId = item.dataset.scenario;
+
+                // 更新选中状态
+                document.querySelectorAll('.scenario-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                // 更新当前场景
+                currentScenario = scenarioId;
+
+                // 渲染时间线和泳道图
+                renderTimeline(scenarioId);
+                renderSwimlane(scenarioId);
+
+                // 更新面包屑
+                const scenario = scenarios[scenarioId];
+                const categoryName = scenario.category === 'upload' ? '上传审核' :
+                                      scenario.category === 'browse' ? '浏览下载' : '平台管理';
+                document.getElementById('currentScenario').textContent = scenario.name;
+            });
+        });
+
+        // === 筛选标签切换 ===
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const filter = tab.dataset.filter;
+
+                document.querySelectorAll('.scenario-group').forEach(group => {
+                    if (filter === 'all') {
+                        group.style.display = 'block';
+                    } else {
+                        group.style.display = group.dataset.category === filter ? 'block' : 'none';
+                    }
+                });
+            });
+        });
+
+        // === 视图切换 ===
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const view = btn.dataset.view;
+                document.getElementById('storylineView').classList.toggle('active', view === 'storyline');
+                document.getElementById('swimlaneView').classList.toggle('active', view === 'swimlane');
+            });
+        });
+
+        // === 搜索功能 ===
+        document.getElementById('scenarioSearch').addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase();
+
+            document.querySelectorAll('.scenario-item').forEach(item => {
+                const name = item.querySelector('.scenario-name').textContent.toLowerCase();
+                item.style.display = name.includes(keyword) ? 'flex' : 'none';
+            });
+        });
+
+        // === 初始化渲染 ===
+        renderTimeline('S001');
+        renderSwimlane('S001');
+    </script>
+</body>
+</html>
